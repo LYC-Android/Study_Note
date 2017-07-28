@@ -1,0 +1,52 @@
+Java高级
+Ⅰ反射  
+Ⅱ 注入
+Ⅲ注解
+Ⅳ常用的设计模式:代理 观察者 Builder设计模式 Java的安全知识:加密解密算法
+
+技术要求和面试前的准备
+1.选一个自己相对比较擅长的领域
+2.基础要背
+3.试着去了解这个领域世面上的x 技术
+4.如果有时间的话，研究其中一个总所周知的库的源码
+
+第三章
+3-1activity面试问题
+activity的4种状态
+running/paused/stopped/kildded
+
+android进程优先级
+前台/可见/服务/后台/空
+
+scheme跳转协议
+android中额scheme是一种页面跳转协议，是一种非常好的实现机制，通过定义自己的scheme协议，可以非常方便跳转app中的各个页面；通过scheme协议，服务器可以定制化告诉App跳转那个页面，可以通过通知栏消息定制化跳转页面，可以通过H5页面跳转等
+
+webView面试详解
+WebView常见的一些坑
+1.Android API level 16以及之前的版本存在远程代码执行安全漏洞，该漏洞源于程序没有正确限制使用WebView.addJavascriptInterface方法，远程攻击者可以通过使用Java 反射API利用该漏洞执行任意java对象方法
+
+
+第五章
+5-1view绘制面试问题
+1.View树的绘制流程
+measure->layout->draw
+1.是否重新计算视图的大小
+2.是否需要重新安置视图位置
+3.是否需要重绘
+实际上是一个递归的过程，会对所有的子元素进行如下过程
+
+measure 重要的2个 参数
+1.ViewGroup.LayoutParams
+2.MeasureSpc
+共有32位，其中其2位设置测量模式，即AT_MOST,EXCATLY,SPRCIFY.后面30位表示在次模式下测量的规则。并以此传递给父容器自己多大
+
+measure中比较重要的方法
+1.measure方法。该方法为final方法，不可以修改，不过由于在最后它还是调用了onMeasure方法，所以我们重写onMeasure方法即可以实现效果
+2.onMeasure()方法
+2.setMesureDimeson()是测量结束的时候必定会被调用的方法
+
+layout
+
+draw-两个容易混淆的方法
+invalidate():如果大小没有变化就不会调用layout放置过程
+requestLayout()：当布局放生变化的时候，会调用mesure layout方法，但是不会调用draw方法
