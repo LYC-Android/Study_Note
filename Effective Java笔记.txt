@@ -1,0 +1,109 @@
+第二章:创建和销毁对象
+1.考虑用静态工厂方法代替构造器
+对于类而言，为了让客户端获取他自身的一个实例，最常用的方法就是提供一个共有的构造器。还有一种方法，提供一个公有的静态工厂方法，它只是返回类的实例的静态方法。
+例如Boolean源码
+public static final Boolean TRUE = new Boolean(true);
+public static final Boolean FALSE = new Boolean(false);
+public static Boolean valueOf(boolean b){
+	return b?Boolean.TRUE:Boolean.FALSE;
+}
+提供静态工厂方法而不是共有的构造方法，这样做具有如下优势
+1.静态工厂方法与构造器不同的第一大优势在于，它们有名称。
+一个类只能有一个带有指定签名的构造器。编程人员通常知道如何避开这一限制:提供两个构造器，它们的参数列表只在参数类型的顺序上有所不同。实际上这并不是什么好主意。面对这样的API，用户永远也记不住改用哪个构造器，结果通常会调用错误构造器。并且读到使用了这些构造器的代码时，如果没有参考类的文档，往往不知所云。
+
+2.静态工厂方法与构造器不同的第二大优势在于，不必在每次调用它们的时候都创建一个新的对象。
+这使得不可变类可以使用预先构建好的实例，或者将构建好的实例缓存起来，进行重复利用，从而避免创建不必要的重复对象。Boolean.valueOf方法说明了这项技术。
+
+3.静态工厂法与构造器不同第三大优势在于，他们可以返回元返回类型的任何子类型的对象。这样我们在选择返回对象的类时就有了更大的灵活性。
+这种灵活性的一种应用是，API可以返回对象，同时又不会使对象的类变成公有的。以这种方式隐藏实现类会使API变得非常简洁
+
+4.静态工厂方法的第四大优势在于，在创建参数化类型实例的时候，它们使代码变得更加简洁、遗憾的是，在调用参数化类的构造器时，即使参数类型很明显，也必须指明。
+例如:
+Map<String , List<String>> m=new HashMap<String,List<String>>();
+但是有了静态工厂方法，编译器就可以替你找到类型参数。假如HashMap提供了这个静态工厂:
+public static HashMap<K,V> newInstance(){
+	return new HashMap<K,V>();
+}
+你就可以使用这句简洁的代码代替上面这段繁琐的声明:
+Map<String,List<String>> m=HashMap.newInstance();
+
+使用场景:由于静态工厂方法有名称，所以它们不受上述的限制。当一个类需要多个带有相同签名的构造器时，就用静态工厂方法代替构造器，并且慎重地选择名称以便突出他们之间的区别。
+
+2.遇到多个构造器参数时要考虑用构建器
+简而言之,如果类的构造器或者静态工厂具有多个参数，设计这种类时，Builder模式就是种不错的选择，特别是当大多数参数都是可选的时候。与使用传统的重叠构造器模式相比，使用Builder模式的客户端代码将更容易于阅读和编写，构造器也比JavaBeans更加安全。
+public  class BuilderMethod {
+    private boolean addA;
+    private boolean addB;
+    private boolean addC;
+    private boolean addD;
+
+   
+
+    public BuilderMethod(Builder builder) {
+        this.addD=builder.addD;
+        this.addC=builder.addC;
+        this.addB=builder.addB;
+        this.addA=builder.addA;
+    }
+
+
+    public static class Builder{
+    private boolean addA;
+    private boolean addB;
+    private boolean addC;
+    private boolean addD;
+
+    public Builder addA() {
+        addA=true;
+        return this;
+    }
+
+    public Builder addB() {
+        addB = true;
+        return this;
+    }
+
+    public Builder addC() {
+        addC=true;
+        return this;
+    }
+
+    public Builder addD() {
+        addD = true;
+        return this;
+    }
+
+    public BuilderMethod build() {
+        return new BuilderMethod(this);
+    }
+
+}
+
+}
+
+3.用私有构造器或者枚举类型强化Singleton属性
+Singleton指仅仅被实例化一次的类。singleton通常被用来代表那些本质上唯一的系统组件，比如窗口管理器或者文件系统。
+class Single{
+	private static final Single ourInstance=new Single();
+	
+	private Single(){
+
+	}
+
+	public static Single getInstacne(){
+	   return ourInstance;
+	}
+}
+
+
+4.通过私有构造器强化不可实例化的能力
+有时候，你可能需要编写只包含静态方法和静态域的类。这些类的名声很不好，因为有些人在面向对象的语言中滥用这样的类来编写过程化的程序。
+public class UtilityClass{
+	private UtilityClass();
+}
+
+5.避免创建不必要的对象
+一般来说,最好能冲用对象而不是在每次需要的时候就创建一个相同功能的新对象。重用方式即快速，又流行。如果对象是不可变的，他就始终可以被重用
+
+6.消除过期的对象引用
+当你从手工管理内存的语言(C/C++)转换到具有垃圾回收功能的语言的时候，程序猿的工作会变的更加容易，因为当你用完了对象之后，她们呢会被自动回收。当你第一次经历对象回收功能的时候，会觉得这简直有点不可思议。这很容易给你留下这样的印象，认为自己不再需要考虑内存管理的事情了。其实不然。
