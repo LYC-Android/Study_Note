@@ -108,7 +108,31 @@ Java虚拟机自带了以下几种加载器
 
 系统(System)类加载器:也称为应用类加载器,它的父加载器为扩展类加载器。它从环境变量classpath或者系统水泥工java.class.path所指定的目录中加载类,它是用户自定义的类加载器的默认父加载器。系统加载器是纯Java类，是java.lang.ClassLoader类的子类
 
+父子加载器并非继承关系,也就是说子加载器不一定继承了父加载器
 
+除了以上虚拟机自带的加载器以外,用户还可以定制自己的类加载器(User-defined Class Loader).Java提供了抽象类java.lang.ClassLoader,所有用户自定义的类加载器应该继承ClassLoader类
+
+Class sampleClass=loader2.loadClass("Sample");
+loader2首先从自己的命名空间查找Sample类是否已经被加载,如果已经加载,就直接返回代表Sample类的Class对象的引用。
+如果Sample类还没有被加载,loader2首先请求loader1代为加载,loader1再请求系统类加载器代为加载,系统类加载器再请求扩展类加载器代为加载,扩展类加载器再请求根类加载器代为加载。若根类加载器和扩展类加载器都不能加载，则系统类加载器尝试加载,若能加载成功,则将Sample类所对应的Class对象的引用返回给loader1，loader1再将引用返回给loader2,从而成功将Sample类加载进虚拟机。若系统类加载器不能加载Sample类，则loader1尝试加载Sample类,若loader1也不能成功加载,则loader2尝试加载。若素有的父加载器及loader2本身都不能加载,则抛出ClassNotFoundException异常
+     根加载器
+       /|\
+        |
+     扩展类加载器 
+       /|\
+        |  
+     系统加载器
+       /|\
+        |     加载
+     loader1 - - ->Sample类
+       /|\
+        |  
+     loader2 
+
+若有一个类加载器能成功加载Sample类,那么这个类加载器被成为定义类加载器,所有能成功返回Class对象的引用的类加载器(包括定义类加载器)都被称为初始类加载器
+
+假设
+loader1实际加载了Sample类,则loader1为Sample类的定义类加载器,loader2和loader1为Sample的初始类加载器
 
 
 
