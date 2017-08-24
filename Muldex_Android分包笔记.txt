@@ -1,0 +1,39 @@
+Android Multidex(分包)实现及原理
+1.什么是分包以及分包可以解决什么问题
+apk里面一般情况下包含如下几个文件
+   --AndroidManifest.xml
+   --R     存放整个APK的资源文件，比如drawable，string
+   --resource.arsc    存放的是与R文件对应的资源的索引
+   --assets         也是存放资源的，只不过这个资源里面的东西是没有id的
+   --lib           存放apk的so文件
+   --META-INF     存放签名信息
+   --classes.dex    存放apk的代码，相当于一个class文件，只不过是一个优化过的class文件
+
+   首先为什么需要分包，因为5.0之前Android使用Dalivd虚拟机，使用的是一个short存放方法数，而short的最大值为65535.所以当超过这个数的时候，会报错。所以这个时候就需要多个dex文件了。
+
+2.Java中ClassLoder机制介绍
+
+Java中常见的类加载器
+BootstrapClassLoader
+纯C++实现的类加载器，没有对应的Java类，主要加载jre/lib/目录下的核心库
+ExtClassLoader加载器
+类的全名是sun.misc.Launcher$ExtClassLoader,主要加载/jre/lib/ext目录下的扩展包
+AppClassLoader加载器
+sun.misc.Launcher$AppClassLoader,主要加载CLASSPATH路劲下的包
+
+Java的父委托机制
+当要加载一个类的时候，首先会调用AppClassLoader加载器，这个时候一般没有，这个时候会调用他的父亲--ExtClassLoader加载器，这个时候也是什么都没有，然后由于ExtClassLoader加载器已经没有爸爸了。所以只能找到同一个时期，比自己叼的C++加载器BootstraoClassLoader。然后再往回告诉，首先在BootstrapClassLoader的jre/lib目录下的核心库，jdk中的类，找不到。那么返回去下一个ExtClassLoader，这里主要就是/jre/lib/ext目录下的扩展包。如果还是没有的话就跑回你写的Java类中加载，即调用AppClassLoader加载器，主要加载的就是jar包和你写的java类里面的东西。这样就完成了一个加载机制。
+
+Java的父委托机制的好处就是，如果你在自己写的代码中写了和Arraylist一样的包名的类。这个时候系统加载的还是jdk中的arraylist。这样保证了代码的安全性，因为你不敢保证自己写的Arraylist一定会对
+
+Android中常用的类加载器
+PathClassLoader
+加载/data/app目录下的apk文件，从这个目录可以看出，PathClassLoader主要用来加载已经安装了的apk
+DexClassLoader
+加载路径需要在创建DexClassLoader时传入，也就是说可以加载任何路劲下的apk/dex/jar
+
+3.两种分包方案原理介绍
+4.两种分包方案的代码实现
+5.两种分包方案比较
+6.分包注意事项
+Gradle和Ant
