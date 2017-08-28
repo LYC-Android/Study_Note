@@ -1,0 +1,22 @@
+Android Multidex实现啊及原理(分包)
+学习内容
+1.什么是分包及分包可以解决什么问题
+2.Java中Classloader机制介绍
+3.两种分包方案原理介绍
+4.两种分包方案的代码实现
+5.两种分包方案比较
+6.分包注意事项
+
+Java中常见的加载器
+BootstrapClassLoader
+ExtClassLoader
+AppClassLoader
+
+Android应用程序,本质上使用的是java开发,使用标准的java编译器编译出Class文件,和普通的java开发不同的地方是吧class文件在重新打包成dex类型的文件,这种重新打包会对Class文件内部的各种函数表、变量表进行优化,最终产生了odex文件。odex文件是一种经过android打包工具优化后的Class文件,因此加载这样特殊的Class文件需要特殊的类加载器,所以提供了DexClassLoader类
+
+类装载器DexClassLoader的具体使用
+这个类的使用过程基本是这样:
+1.传递apk/jar目录,dex的解压缩目录,c/c++库的目录
+2.创建一个DexClassLoader实例
+3.加载指定的类返回一个Class
+4.然后使用反射调用这个Class

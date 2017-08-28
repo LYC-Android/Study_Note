@@ -1,0 +1,27 @@
+什么事ClassLoader?
+ClassLoader动态的装载Class文件。标准的Java Sdk中有ClassLoader类，借助这个类可以装载想要的Class文件，每个ClassLoader对象在初始化时必须指定Class文件的路径
+
+Android DexClassLoader
+Android应用程序,本质上使用的Java开发,使用标准的java编译器编译出Class,和普通的java开发不同的地方是把class文件重新打包成dex类型的文件,这种重新打包会对class文件内部的各种函数表、变量表等进行优化，最终产生了odex文件。odex文件是一种经过android打包工具优化后的Class文件，因此加载这样特殊的Class文件就需要特殊的类装载器,所以android中提供了DexClassLoader类
+
+DexClassLoader:创建一个DexClassLoader用来找出指定的类和本地代码(c/c++代码)。用来解释执行在DEX文件中的class文件
+
+Dex----->class文件的压缩
+类加载器DexClassLoader的具体使用
+这个类的使用过程基本是这样:
+1.传递apk/jar目录,dex的解压缩目录,c/c++库的目录
+2.创建一个DexClassLoader实例
+3.加载指定的类返回一个Class
+4.然后使用反射调用这个Class
+
+Android使用的Dalvik虚拟机加载class文件,所以classLoader不同于java默认类库rt.jar包中java.lang.ClassLoader,可以看到android中的classloader做了些修改,但是原理还是差不多的,实现了父委托机制
+                           ClassLoader
+                               /|\
+                                |
+                            BaseDexClassLoader
+                               /|\
+                                |
+                            --------------------
+                            |                   |                     
+                            |                   |
+                          PathClassLoader      DexClassLoader
