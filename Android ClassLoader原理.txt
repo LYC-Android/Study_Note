@@ -1,4 +1,8 @@
-什么事ClassLoader?
+http://blog.csdn.net/Mr_LiaBill/article/details/50497055
+http://www.jianshu.com/p/1c5e8f281d0d
+http://blog.csdn.net/nanzhiwen666/article/details/50515895
+
+什么是ClassLoader?
 ClassLoader动态的装载Class文件。标准的Java Sdk中有ClassLoader类，借助这个类可以装载想要的Class文件，每个ClassLoader对象在初始化时必须指定Class文件的路径
 
 Android DexClassLoader
@@ -25,3 +29,58 @@ Android使用的Dalvik虚拟机加载class文件,所以classLoader不同于java�
                             |                   |                     
                             |                   |
                           PathClassLoader      DexClassLoader
+
+
+
+
+BaseDexClassLoader类:
+PathClassLoader和DexClassLoader的基类，重载了findClass方法，直接交个DexPathList处理
+public class BaseDexClassLoader exends ClassLoader{
+   public BaseDexClassLoader(String dexPath, File optimizedDirectory,
+            String libraryPath, ClassLoader parent) {
+
+            }
+	@Override
+	protected Class<?> findClass(String name) throws ClassNotFoundException{
+	Class clazz=pathList.findClass(name);//实际上是通过DexPathList来查找类的
+	if(class==null){
+	      throw new ClassNotFoudException(name);
+	}
+	return clazz;
+	}
+}
+dexPath 需要装载的APK或者Jar文件的路径。包含多个路径用File.pathSeparator间隔开,在Android上默认是 “:”
+optimizedDirectory 优化后的dex文件存放目录，不能为null
+libraryPath 目标类中使用的C/C++库so文件的路径,每个目录用File.pathSeparator间隔开; 可以为null
+parent 该类装载器的父装载器，一般用当前执行类的装载器
+
+DexClassLoader和PathClassLoader类:
+都继承自BaseDexClassLoader,只是有不同的构造函数,唯一的区别PathClassLoader就是optimizedDirectory参数为null,很好理解嘛,PathClassLoader加载的是data/app/...安装目录下的dex,但是
+DexClassLoader加载外部未安装的dex/apk/jar/zip等,所以需要把最后的odex文件放在optimizedDirectory目录,所以不能为null
+
+public class DexClassLoader extends BaseDexClassLoader {
+    public DexClassLoader(String dexPath, String optimizedDirectory,
+            String libraryPath, ClassLoader parent) {
+        super(dexPath, new File(optimizedDirectory), libraryPath, parent);
+    }
+}
+
+//个人理解由于PathClassLoader都是加载一些已经解压好的，所以只有2种可能,要么就是利用了so文件的，要么就是连so都没有的文件
+public class PathClassLoader extends BaseDexClassLoader {
+    public PathClassLoader(String dexPath, ClassLoader parent) { //PathClassLoader
+        super(dexPath, null, null, parent);
+    }
+    public PathClassLoader(String dexPath, String libraryPath,
+            ClassLoader parent) {
+        super(dexPath, null, libraryPath, parent);
+    }
+}
+
+
+ Log.i("LiaBin", "Context的类加载加载器:" + Context.class.getClassLoader());//系统库的class，所以是BootClassLoader
+        Log.i("LiaBin", "String的类加载加载器:" + String.class.getClassLoader());//系统库的class，所以是BootClassLoader,不同于java吧，java应用程序的话打印的是null
+         Log.i("LiaBin", "MainActivity的类加载器:" + MainActivity.class.getClassLoader());//本地的class，所以是PathClassLoader
+              Log.i("LiaBin", "应用程序默认加载器:" + getClassLoader()); //PathClassLoader ,这才是默认的加载器DexPathList[[zip file "/data/app/demo.lbb.mytest-1.apk"]..
+        Log.i("LiaBin", "系统类加载器:" + ClassLoader.getSystemClassLoader()); //上面代码可以知道此时是PathClassLoader，同时DexPathList[[directory "."]..
+
+ DexPathList:个人理解主要就是读取一个指定目录下面，dex，jar，zip，apk里面有没有你想要的class文件，
