@@ -1,0 +1,20 @@
+https://mp.weixin.qq.com/s?__biz=MzI1MTA1MzM2Nw==&mid=400118620&idx=1&sn=b4fdd5055731290eef12ad0d17f39d4a&scene=1&srcid=1106Imu9ZgwybID13e7y2nEi#wechat_redirect
+
+1.背景
+当一个APP发布之后,突然发现了一个严重bug需要进行紧急修复,这时公司各方就忙得焦头烂额:重新打包APP、测试、向各个应用市场和渠道换包、提示用户升级、用户下载、覆盖安装。有时候仅仅是为了修改了一行代码,也要付出巨大的成本进行换包和重新发布。
+这时候就提出了一个问题:有没有办法以补丁的方式动态修复紧急bug,不再需要重新发布APP,不再需要用户重新下载,覆盖安装?
+虽然Android系统没有提供这个功能,但是很幸运的告诉大家,答案是:可以,我们QQ空间提出了热补丁动态修复技术来解决以上这些问题。
+
+3.解决方案
+该方案是基于Android Dex分包方案的
+简单的概括一下,就是把多个dex文件塞入到app的classLoader之中,但是android dex拆包方案中的类是没有重复的,如果classes.dex和classes1.dex中有重复的类,当用到这个重复的类的时候,系统会选择哪个类进行加载呢?
+
+观看BaseDexClassLoader的findClass的源码我们可以发现。一个APK文件可以包含多个dex文件,每个dex文件就是一个Element,多个dex文件排列成一个有序的数组dexElements,当找类的时候,会按顺序遍历dex文件,然后从当前遍历的dex文件中找类,如果找到类则返回,如果找不到从下一个dex文件继续查找。
+理论上如果在不同的dex中有相同的类存在,那么会优先选择排在排在前面的dex文件的类
+
+在此基础上,我们构想了热补丁的方案,把有问题的类打包到一个dex(patch.dex)中去,然后把这个dex插入到Elements的最前面。
+
+执行完了以上的步骤之后,我们发现程序会报错,看log日志我们可以看到是说2个类(比如A引用了B),它们不再同一个dex中
+
+CLASS_ISPREVERIFIED:
+打上这个标志的时机:如果这类已经
