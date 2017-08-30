@@ -1,0 +1,12 @@
+http://www.imooc.com/learn/876
+
+*.apk与*.dex文件
+*.apk文件    Android Package Android安装包
+*.dex文件     Dalvik VM executes AndroidDalvik虚拟机执行程序
+
+*.apk文件内容
+AndroidManifest.XML配置信息
+META-INF签名信息
+classes.dex Java字节码文件
+res 资源文件
+resources.arsc二进制资源文件
