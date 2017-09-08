@@ -52,3 +52,30 @@
    -cols:指定文本区域的列数
    -rows:指定文本区域的行数
    -readonly:只读
+
+什么是CSS
+- CSS指层叠式样式表(Cascading Style Sheets)
+- 定义样式如何显示HTML元素
+- 样式通常存储在样式表中
+CSS就是给HTML化妆的
+
+如何使用CSS
+- 内联方式(几乎不用)
+  -样式定义在单个的HTML元素中
+  <p sytle="color:red;">内联样式演示</p>
+
+- 内部样式表(偶尔用用)
+  - 样式定义在HTML页的头元素中
+   <head>
+       <style>
+             h2{
+                color:red;
+             }
+       <style>
+   </head>
+- 外部样式表(经常用)
+  -将样式定义在一个外部的CSS文件中(.css文件)
+  -由HTML页面引用样式表文件
+ <head>
+  <link rel="stylesheet" href="my.css"/>
+ </head>
