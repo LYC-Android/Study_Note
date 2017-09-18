@@ -1,0 +1,17 @@
+画图三要素
+Canvas:绘制Bitmao操作
+Paint:绘制的画笔Paint(颜色和样式)
+Path:路径、轨迹
+
+画图三要素基本用法
+Canvas
+1.如果直接继承View,可以重写onDraw(Canvas canvas)方法,直接用里面的canvas进行绘制。
+2.可以直接利用Activity的绘制机制，用lockCanvas()方法来获得属于当前Activity的Canvas
+3.在SurfaceView中,同2可以利用SurfacHolader对象的lockCanvas()方法来获得Canvas。
+
+Paint
+画笔的使用很简单,直接通过new关键字来实例化,然后通过Paint对象来对画笔进行相应的设置
+
+Path
+Path路径,用法也很简单,直接用new来实例化,然后通过path对象来设置你想要的画图的轨迹或路线
+比如m矩形,三角形,圆,曲线等

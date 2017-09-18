@@ -1,3 +1,69 @@
+首先总结一下视频中的关键点:
+ -自定义绘制的方式是重写绘制方法,其中最常用的是onDraw()
+ -绘制的关键是Canvas的使用
+  -Canvas的绘制类方法:drawXXX()(关键参数:Paint)
+  -Canvas的辅助类方法:范围裁切和几何变换
+ -可以使用不同的绘制方法来控制遮盖关系
+
 自定义绘制知识的四个级别
-1.Canvas的drawXXX()系列方法及Paint最常见的使用
-Canvas.drawXXX()是自定义
+
+ -1.Canvas的drawXXX()系列方法及Paint最常见的使用
+    Canvas.drawXXX()是自定义绘制最基本的操作,掌握了这些方法,你才知道怎么绘制内容,例如怎么画圆、怎么画方、怎么画图像和文字。绘制这些内容再配合上Paint的一些常见方法来对绘制内容的颜色和风格进行简单的配置,就能够应付大部分的绘制需求了。
+
+ -2Paint的完全攻略
+  -Paint可以做的事,不只是设置颜色,也不只是我在视频里讲得空心实心、线条粗细、有没有阴影,它可以做得风格真的是非常多、非常细。
+
+ -3 Canvas对绘制的辅助-----范围裁切和几何变换
+  -大多数时候,它们并不会卑用到,但一旦用到,通常都是很酷炫的效果。范围裁切和几何变换都是用于辅助的,它们本身并不酷,让它们变酷是设计师们的想象力与创造力.而你要做的,是把他们的想象力与创造力变成现实。
+
+ -4使用不同的绘制方法来控制绘制顺序
+  -绘制顺序解决的并不是做不到的问题，而是性能问题。同样的一种效果,你不用绘制顺序的控制往往也能做到，但需要用多个View甚至是多层View才能拼凑出来,因此代价是UI的性能;而使用绘制顺序的控制的话,一个View就全部搞定了。
+ 
+
+ -一切的开始:onDraw()
+   自定义绘制的上手非常容易:提前创建好Paint对象,重写onDraw(),把绘制代码卸载onDraw()里面,就是自定义绘制最基本的实现。大概就是这样
+
+   Paint paint=new Paint();
+
+  @Override
+protected void onDraw(Canvas canvas) {  
+    super.onDraw(canvas);
+
+    // 绘制一个圆
+    canvas.drawCircle(300, 300, 200, paint);
+}
+
+ - Canvas.drawXXX() 和 Paint 基础
+
+     -drawXXX() 系列方法和 Paint 的基础掌握了，就能够应付简单的绘制需求。它们主要包括：
+
+           -Canvas 类下的所有 draw- 打头的方法，例如 drawCircle() drawBitmap()。
+           -Paint 类的几个最常用的方法。具体是： 
+               Paint.setStyle(Style style) 设置绘制模式
+               Paint.setColor(int color) 设置颜色
+               Paint.setStrokeWidth(float width) 设置线条宽度
+               Paint.setTextSize(float textSize) 设置文字大小
+               Paint.setAntiAlias(boolean aa) 设置抗锯齿开关
+
+
+    -Canvas.drawColor(@Colorint int color)颜色填充
+       这是最基本的drawXXX()方法:在整个绘制区域统一涂上指定的颜色。
+       类似方法还有drawRGB(int r,int g,int b)和drawARGB(int a,int r , int g,int b),他们和drawColor(color)只是使用方式不同,作用都是一样的。
+    
+    -drawCircle(float centerX,float centerY,float radius,Paint paint)画圆
+    -drawRect(float left,float top,float right,float bottom,Paint paint)画矩形
+    -drawPoint(float x,float y,Paint paint)画点
+    x和y是点的坐标.点的大小可以通过paint.setSTrokeWidth(width)来设置;点的形状可以通过paint.setStrokeCap(cap)来设置:ROUND画出来的圆形的点,SQUARE或BUTT画出来时方形
+    -drawPoint(float[] pts,int offset,int count,Paint paint)/drawPoints(float[] pts.Paint paint)画点(批量)
+     同样是画点，它和 drawPoint() 的区别是可以画多个点。pts 这个数组是点的坐标，每两个成一对；offset 表示跳过数组的前几个数再开始记坐标；count 表示一共要绘制几个点。说这么多你可能越读越晕，你还是自己试试吧，这是个看着复杂用着简单的方法。
+
+          float[] points = {0, 0, 50, 50, 50, 100, 100, 50, 100, 100, 150, 50, 150, 100};  
+          // 绘制四个点：(50, 50) (50, 100) (100, 50) (100, 100)
+           canvas.drawPoints(points, 2 /* 跳过两个数，即前两个 0 */,  
+          8 /* 一共绘制 8 个数（4 个点）*/, paint);
+    -drawOval(float left,float top,float right,float bottom,Paint paint)画椭圆
+    -drawLine(float startX,float start,float stopX,float stopY,Paint paint)画线
+    由于直线不是封闭图形，所以 setStyle(style) 对直线没有影响。
+    -drawRoundRect(float left,float top,float right,float bottom,float rx,float ry,Paint paint)画圆角矩形
+    -drawArc(float left,float top,float right,float bottom,float startAngle,flaot sweepAngle,boolean userCenter,Paint paint)绘制弧形或扇形
+    drawArc() 是使用一个椭圆来描述弧形的。left, top, right, bottom 描述的是这个弧形所在的椭圆；startAngle 是弧形的起始角度（x 轴的正向，即正右的方向，是 0 度的位置；顺时针为正角度，逆时针为负角度），sweepAngle 是弧形划过的角度；useCenter 表示是否连接到圆心，如果不连接到圆心，就是弧形，如果连接到圆心，就是扇形。
