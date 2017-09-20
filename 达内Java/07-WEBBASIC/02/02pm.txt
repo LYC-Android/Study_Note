@@ -75,3 +75,24 @@ ID选择器(程序猿有义务保证id的唯一性)
     当鼠标悬停至元素上方时,向该元素添加样式
    -:focus
     当元素获取焦点时,向该元素添加样式
+
+
+
+  border
+  border属性:用来设置元素的边框
+  四边设置
+   -border:width值 style值 color值;
+  单边设置
+   - border-left:width值 style值 color值
+   - border-right:width值 style值 color值
+   - border-top:width值 style值 color值
+   - border-bottom:width值 style值 color值;
+
+  overflow:当内容溢出元素框时如何处理
+   -visible:默认情况,即不管它溢不溢出都是这样
+   -hidden:溢出的部分隐藏
+   -scroll:无论是否溢出都加滚动条
+   -auto:溢出才加滚动条
+
+ box
+ 框模型(Box Model)定义了元素框处理元素内容、内边距、外边距和边框的方式
