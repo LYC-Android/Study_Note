@@ -1,0 +1,30 @@
+文本格式化
+  控制文本
+   -指定字体
+    -font-family:value,value2;
+   -字体大小
+    -font-size:value;
+   -字体加粗
+    -font-weight:normal/bold;
+   -文本颜色
+    -color:value;
+   -文本排列
+    -text-align:left/right/centerl
+   -文字修饰
+    text-decoration:none/underline;
+   -行高(文字在其行高范围内垂直居中，当行高=元素高的时候，会导致文字垂直居中 )
+    line-height:value(1.6em);
+   -首行文本缩进
+    text-indent:value(2em);
+
+
+    body{
+    font-family:'微软雅黑','文泉驿正黑','黑体'；
+    }
+
+    h1{
+    font-size:40px;
+    text-align:center;
+    }
+
+表格样式
