@@ -1,0 +1,33 @@
+3-1Activity面试详解
+1.Activity生命周期
+  
+  1.Activity的4种状态
+  running/paused/stopped/killed
+  running:Activity处于活动状态用户可以进行点击，是一个Actiivty处于栈顶的一个状态
+  paused:Activity失去焦点的时候，或者被一个非全屏、透明的Activity覆盖的时候
+  stopped:当Acitivty卑另外一个Activity完全覆盖的时候，成员变量信息什么的如果内存不紧张就还在
+  killed:Activity已经被系统回收了
+
+  2.Activity的生命周期分析
+   Activity启动->onCreate()->onStart()->onResume()
+   点击Home键返回到主界面(Activity不可见)->onPause()->onStop()
+   当我们再次返回到原Activity时->onRestart()->onStart()->onReusme()
+   退出当前Activity时->onPause()->onStop()->onDestory()
+
+  3.Activity进程优先级
+  前台/可见/服务/后台/空
+
+
+2.Android任务栈
+
+3.Activity启动模式
+standard:每次启动Activity都会创建一个Activity的实例
+singleTop:如果在栈顶就复用，否则新建
+singleTask:，并且会回调onNewIntent
+singleInstance:独享一个任务栈
+
+4.scheme跳转协议
+Android中的scheme是一种页面内跳转协议,是一种非常好的实现机制，通过定义自己的 scheme协议，可以非常方便跳转app中的各个页面；通过scheme协议，服务器可以定制化告诉App跳转那个页面，可以通过通知栏消息定制化跳转页面，可以通过H5页面跳转页面等。
+
+
+3-3Fragment面试详解
