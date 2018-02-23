@@ -31,3 +31,114 @@ Android中的scheme是一种页面内跳转协议,是一种非常好的实现机
 
 
 3-3Fragment面试详解
+
+  1.Fragment为什么被称为第五大组件
+    Fragment相比Activity更加节省内存、且切换效果更好。必须要依附Activity
+    
+    1.2Fragment加载到Activity的两种方式
+    1.添加Fragment到Activity布局中，像普通组件一样。
+    2.动态在activity中添加Fragment，通过获取FragmentManger，利用FragmentTansaction添加或者替换Fragment、并且最后还需要调用commit方法
+    
+    1.3FragmentPagerAdapter与FragmentStatePagerAdapter区别
+    前者适用于页面较少的情况、后者适用于页面较多的情况
+    前者不回收内存、而后者在切换Fragment的时候会销毁Fragment
+
+  2.Fragment的生命周期
+
+  3.Fragment之间的通信
+  1.Fragment中调用Activity中的方法getActivity
+
+  2.在Activity中调用Fragment中的方法 接口回调
+
+  3.在Fragment中嗲用Fragment中的方法FindFragmentById
+
+  4.Fragment管理器:FragmentMnanger
+  Fragment的replace、add、remove方法
+  replace:只是替换而不没有移除
+
+
+3-5 Service面试详解
+
+ 1.Service的应用场景，以及和Thread区别
+
+   1.Service是什么?
+   Service(服务)是一个一种可以在后台执行长时间运行操作而没有用户界面的应用组件。
+   
+   Service和Thrad的区别
+   应用场景的区别:首先如果你是网络访问、文件传输之类的操作的话就使用Thread、如果是后台放音乐什么的就用Service
+   一个运行在住线程、一个运行在子线程，所以Service不能进行耗时操作、当需要耗时操作的时候必须要开启子线程否则会报AMR错
+
+ 2.两种启动Service的方式
+  1.startService
+   Ⅰ定义一个类继承Service
+   Ⅱ在Manifest.xml文件中配置该Service
+   Ⅲ使用Context的startService(Intent)  方法启动该Service
+   Ⅳ不再使用时，调用stopService(Intent)方法停止该服务
+
+  2.bindService
+   Ⅰ创建BindService服务端，继承自Service并在类中，创建一个实现Ibinder接口的实例对象并提供公共方法给客户端调用
+   Ⅱ从onBind()回调方法返回此Binder实例。
+   Ⅲ在客户端中，从onServiceConnnected()回调方法接受Binder，并使用提供的方法调用绑定服务。 
+
+3-7 Broadcast Receiver面试详解
+   1.广播
+      广播的定义:
+      在Android中，broadcast是一种广泛运用的在应用程序之间传输信息的机制，Android中我们要发送的广播内容是一个Intent，这个Intent可以携带我们要传送的数据。
+
+      广播的使用场景
+      Ⅰ同一个APP具有多个进程的不同组件之间的消息通信
+      Ⅱ不同APP之间的组件之间消息通信
+
+      广播种类
+      ⅠNormal Broadcast：Context.sendBroadcast
+      ⅡSystem Broadcast：Context.sendOrderBroadcast
+      ⅢLocal Broadcast：只在自身APP传播
+
+   2.实现广播-receiver
+   静态注册:注册完成就一直运行
+   动态注册:跟随activity的生命周期，不撤销注册会引起内存的泄漏
+
+   3.广播实现机制
+   Ⅰ自定义广播接收者BroadcastReceiver,并复写onRecvice()方法
+   Ⅱ通过Binder机制向AMS(Activity Manager Service)进行注册
+   Ⅲ广播发送者通过Binder机制向AMS发送广播
+   ⅣAMS查找符合相应条件(IntentFilter/Permission等)的BroadcastReceiver，将广播发送到BroadcastReceiver(一般情况下是Activity)相应的消息循环队列中
+   Ⅴ消息循环执行拿到此广播，回调BroadcastReceiver中的onReceive()方法。 
+
+   4.LocalBroadcastManager详解    
+   Ⅰ使用它发送的广播只在自身APP内传播，因此你不必担心泄漏隐私数据
+   Ⅱ其他APP无法对你的APP发送该广播，因为你的APP根本就不可能接受到非自身应用发送的该广播，因此你不必担心有安全漏洞可以利用
+   Ⅲ比系统的全局广播更加高效
+
+
+
+3-8 WebView面试详解
+   1.Webview常见的一些坑
+      ⅠAndroid API level 16以及之前的版本存在远程代码执行安全漏洞,该漏洞源于程序没有正确限制使用WebView.addJavascriptInterface方法,远程攻击者可以他能够过java Reflection API利用该漏洞执行任意Java对象的方法
+      ⅡwebView在布局文件中的使用:webview卸载其他容器中时
+      Ⅲjsbridge
+      ⅣwebviewClient.onpageFinished->WevChromeClient.onProgressChanged
+      Ⅴ后台耗电
+      ⅥWebview硬件加速导致页面渲染问题
+
+   2.关于Webview的内存泄漏问题   
+    1.独立进程，简单暴力，不过可能涉及到进程间通信
+    2.动态添加webview,对传入webview中使用的Context使用弱引用,动态添加webview意思在布局创建个viewGroup用来防止webview，Acitivtiy创建时add进来,在Activity停止时remove掉
+
+ 3-9 Binder面试详解  
+   1.Linux内核的基础知识
+     1.进程隔离/虚拟地址空间
+     2.系统调用
+     3.binder驱动
+
+
+   2.Binder通信机制介绍
+     Ⅰ 为什么要使用binder
+        1.Android使用的Linux内核拥有着非常多的跨进程通信机制
+        2.性能
+        3.安全
+
+     Ⅱ binder通信模型
+     
+     Ⅲ binder通信机制原理
+   3.AIDL
