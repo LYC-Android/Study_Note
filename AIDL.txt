@@ -1,0 +1,28 @@
+AIDL小白成长记
+跨进程如何传递数据?
+1.两个进程无法直接通信
+2.通过Android系统底层间接通信
+
+AIDL:Android Interface Definition Language
+Android接口定义语言
+AIDL   IPC  多个应用程序 多线程
+
+Binder 只有IPC 没有多线程 多个应用程序
+
+Messenger 只有IPC 没有多线程
+
+//包名,文件必须放在指定的目录
+package com.example.android;
+
+//interface 关键字
+//IRemoteService接口名
+interface IRemoteService{
+//方法
+	int getPid(int test);
+}
+
+在AndroidStduio里面操作AIDL:
+Ⅰ在java目录下点击new->AIDLFolder->new AIDLFILE
+Ⅱ点击编译按钮就可以使用了、创建一个Service，并且Binder返回刚刚写的AIDL的STUB，并且实现该接口的内容
+Ⅲ创建客户端Moudel
+Ⅳ直接把服务器端的AIDL拉过来用，指定包名和类名然后 绑定服务，就可以使用了

@@ -127,14 +127,16 @@ Android中的scheme是一种页面内跳转协议,是一种非常好的实现机
 
  3-9 Binder面试详解  
    1.Linux内核的基础知识
-     1.进程隔离/虚拟地址空间
-     2.系统调用
-     3.binder驱动
+     1.进程隔离/虚拟地址空间:操作系统之间不同的进程之间的数据是不共享的，利用的是不同的虚拟地址空间进行隔离
+
+     2.系统调用:只可以访问某些允许的资源
+
+     3.binder驱动:
 
 
    2.Binder通信机制介绍
      Ⅰ 为什么要使用binder
-        1.Android使用的Linux内核拥有着非常多的跨进程通信机制
+        1.Android使用的Linux内核拥有着非常多的跨进程通信机制:管道、socket等
         2.性能
         3.安全
 
@@ -142,3 +144,53 @@ Android中的scheme是一种页面内跳转协议,是一种非常好的实现机
      
      Ⅲ binder通信机制原理
    3.AIDL
+
+
+4.1 Handler面试详解
+1. 什么是hanlder:通过子线程发送信息到主线程，从而更新UI
+
+2.Handler的使用
+1.post(Runable):最终还是会调用sendMesaage
+2.sendMessage   
+
+3.原理
+
+4.Handler引起的内存泄漏以及解决办法
+原因:静态内部类持有外部类的匿名引用，导致外部activity无法释放
+
+解决办法:
+1handler内部持有外部activity的弱引用
+2把handler改为静态内部类
+3mHandler.removeCallback()
+
+
+4.3 AsyncTask面试详解
+  1. 什么是AsyncTask
+  它本质上就是一个封装了线程池和handler的异步框架，让你避免使用Thread和handler来进行后台操作、只能耗时较短的操作，如果是长的话建议使用线程池
+
+  2.AsyncTask的使用
+   3个参数:按照顺序依次是:传入的数据类型、更新的数据类型、返回结果的数据类型
+   5个方法:onPreExceute()、doInbackground()、publishProgress()、onPostExcute()、onProgressUpdate();
+
+  3.AsyncTask机制原理
+   1.AsynvTask的本质是一个静态的线程池，AsyncTask派生出的子类可以实现不同的异步任务,这些任务都是提交到静态的线程池中执行。
+   2.线程池中的工作线程执doInBackground(mParams)方法执行异步任务
+   3.当任务状态改变之后,工作线程会像UI线程发送消息,AysncTask内部的internalHandler响应这些消息,并调用相关的回调函数
+   4.AsyncTask注意事项
+   要注意在onDerstory()中调用cancel方法
+
+
+
+ 4.4 HandlerThread面试详解
+    1. handlerThread是什么
+           ⅠHandlerThread本质上是一个线程类,它继承了Thread;
+           ⅡHandlerThread有自己的内部Looper对象,可以进行looper循环
+           Ⅲ通过获取HandlerThread的looper对象传递给Handler对象,可以在handleMessage方法中执行异步任务
+           Ⅳ优点是不会有堵塞,减少了对性能的消耗,缺点是不能同时进行多任务的处理,需要等待进行处理。处理效率较低
+           Ⅴ与线程池注重并发不同,HandlerThread是一个串行队列,HandlerThread背后只有一个线程。
+    2. handlerThread源码解析   
+   
+   4.5IntentService面试详解
+     1.IntentService是什么
+     2.IntentService使用方法
+     3.IntentService源码解析
