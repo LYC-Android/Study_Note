@@ -1,0 +1,84 @@
+MySQL目录结构
+bin目录,存储可执行文件
+data目录,存储数据文件
+docs,文档
+include目录,存储包含数的头文件
+lib目录,存储库文件
+share,错误信息和字符集文件
+
+启动服务
+net start mysql
+停止服务
+net stop mysql
+
+MySql登陆
+mysql -uroot -padmin
+
+参数
+-u  --username     用户名
+-p  --password     密码
+
+退出
+exit
+
+MySQL语句的规范
+关键字与函数名称全部大写
+数据库名称、表明此、字段名称全部小写
+SQL语句必须以分好结尾
+
+
+创建数据库
+CREATE {DATABASE|SCHEMA} [IF NOT EXISTS] db_name [DEFAULT] CHARACTER SET [=] charset_name
+
+例如
+CREATE DATABASE LYC;
+
+修改数据库
+ALTER {DATABASE|SCHEMA}[db_name][DEFAULT] CHARACTER SET [=] charset_name
+
+例如
+ALTER DATABASE LYC CHARACTER SET GBK;
+
+查看数据库的编码
+SHOW CREATE DATABASE LYC
+
+删除数据库
+DROP {DATABASE|SCHEMA} [IF EXISTS] db_name
+
+例如
+DROP DATABASE LYC;
+
+
+
+第二章:
+数据类型
+ 整型:                                                  字节
+
+ TINYINT      有符号-128到127(-2^7到2^7 -1)               1
+              无符号0到255(0到2^8 - 1)
+ 
+ SMALLINT     有符号-32768到32767(-2^15到2^15 -1)         2
+              无符号0到65535(0到2^16 - 1)
+
+ MEDIUNUBT    有符号-8388608到8388607(-2^23到2^23 -1)    3
+              无符号0到166777215(0到2^24 - 1)
+
+ INT          有符号-2137383648到2147483647(-2^31到2^31 -1) 4
+              无符号0到4294967295(0到2^32 - 1)
+
+ BIGINT        有符号-128到-127(-2^63到2^63 -1)            8
+              无符号0到255(0到2^64- 1)
+
+
+ 浮点型
+ FLOAT [(M,D)]
+
+ DOUBLE  [M,D]           
+ 比如MD分别为7，2，那么当要保存 的数字是7.666666的时候，就变成了7.66
+
+
+
+
+
+
+ 数据表:是数据库的重要组成部分之一，是其他对象的基础

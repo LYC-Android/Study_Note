@@ -192,5 +192,18 @@ Android中的scheme是一种页面内跳转协议,是一种非常好的实现机
    
    4.5IntentService面试详解
      1.IntentService是什么
+      IntentService是继承并处理异步请求的一个类,在IntentService内有一个工作线程来处理耗时操作,启动IntentService的方式和启动传统的Service一样,同时,当任务执行完后,IntentService会自动停止,而不需要手动去控制或stopSelf().另外,可以启动IntentService多次,而每一个耗时操作会以工作队列的方式在IntentService的onHandleIntent回调方法中执行,并且,每次只会执行一个工作线程,执行完第一个再执行第二个
      2.IntentService使用方法
      3.IntentService源码解析
+  
+
+
+ 第八章:ANR&OOM面试详解
+ 1.什么是OOM？
+ 当前占用的内存加上我们申请的内存资源超过了Dalvik虚拟机的最大内存限制就会抛出Out of memory异常
+
+
+
+ 第九章
+  9.4Android插件化面试问题详解
+   
