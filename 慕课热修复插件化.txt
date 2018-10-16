@@ -1,0 +1,237 @@
+第一章class&dex文件的详解
+1-3class文件详解上
+什么是class文件?
+1.能够被JVM识别，加载并执行的文件格式(说白了就是类似于mp4格式那样的东西，只不过里面放的是可执行文件)
+
+如何生成class文件
+1.通过IDE自动帮我们build
+2.通过javac生成class文件
+3.通过java命令去执行class文件
+
+class文件作用
+记录一个类文件的所有信息，记住是所有!(包括类的名称，方法，变量等)就好像我们没有定义一个类的this，super。可是我们却可以使用这些关键字。是因为JVM在生成class文件的时候为我们自动生成了类似于this,super这样的东西，所以我们才可以去使用
+
+1-4class文件详解下
+class文件结构(宏观特点)
+1.一种8位字节的二进制流文件
+2.各个数据按顺序紧密的排列，无间隙(减少体积)
+3.每个类或接口都单独占据一个class文件，好处是:每个类都可以独自管理自己的内容无须交叉
+
+class文件内部的关键字
+名称                        
+magic 加密段，给与虚拟机判断class文件是否被修改
+minor_version 最小适配jdk版本
+major_version 当前是由什么版本的jdk生成的
+constant_pool_count 常量池的数量 通常都是1个常量池
+constant_pool 真正的常量池  
+access_flags 作用域标志 public enum、final等
+this_class 由jvm为我们生成的关键字
+super_class 由jvm为我们生成的关键字
+interfaces_count  表明当前类直接继承的接口
+interfaces
+fiedls_count 表明当前class文件成员变量
+fileds
+methods_count方法数量
+methods
+attribute_count 属性相关注解之类的
+attributes 
+
+
+class文件弊端
+内存占用大,不适合移动端
+堆栈的加载模式，加载速度慢
+文件io操作多，类查找慢
+正是由于上述的缺点，所以我们移动端不适合class文件
+
+
+1-5dex文件详解上
+1.什么是dex文件
+能够被DVM识别，加载并执行的文件格式
+
+2.生成dex文件
+Ⅰ通过IDE自动帮我们build文件
+Ⅱ手动通过dx命令(E:\Android\sdk\build-tools\21.1.2)去生成dex文件
+Ⅲ手动执行dex文件在手机
+1.生成class文件
+javac -target 1.6 -source 1.6 Hellow.java
+
+2.生成dex文件 指定class文件变成dex文件，指明文件名字，路径等
+dx --dex --output Hellow.dex Hellow.class
+
+3.push到手机
+adb push Hellow.dex /storage/emualted/0
+
+4.进入adb
+adb shell
+
+5.运行 指定运行的dex文件，以及要运行的类
+dalvikvm -cp /sdcard/Hellow.dex Hellow
+
+dex文件的作用
+记录整个工程中所有类文件的信息，记住是整个工程
+
+1-6dex文件详解下
+dex文件结构
+1.一种8位字节的二进制流文件
+2.各个数据按顺序紧密的排列，无间隙
+3.整个应用中所有java源文件都放在一个dex中
+
+  文件头   header 文件头 主要记录dex文件信息，以及所有数据的大致分布 
+
+
+           string_ids 字符串的索引 
+           type_ids   类型的索引
+   索引区   proto_ids 方法原型索引
+           field_ids 域的索引
+           method_ids 方法的索引
+
+           class_defs   类的定义区
+   
+   数据区   data         数据区
+
+            link_data   链接数据区  so相关的
+
+
+ class文件和dex文件的异同
+ 1.本质上他们都是一样的,dex是从class文件演变而来的
+ 2.class文件存在许多冗余信息，dex会去除冗余，并整合
+
+
+2-2Java虚拟机结构解析
+编译流程，其实编译器把我们的java源文件按照一定的规则编程class字节码文件
+Java的类加载器
+Bootstrap ClassLoader： Load JRE\lib\rt.jar或者Xbootclasspath选项指定的Jar包
+Extension ClasssLoader: Load JRE\lib\ext\*.jar或-Djava.ext.dirs指定目录下的jar包
+App ClassLoader:Load CLASSPATH或Djava.class.path所指定的目录下的类和jar包
+Custom ClassLoader:通过java.lang.ClassLoader的子类自定义加载class
+加载流程
+1.Loading:类的信息从文件中获取并且载入到JVM的内存里
+2.Verifying:检查读入的结构是否fuheJVM规范的描述
+3.Preparing:分配一个结构来存储类信息 
+4.Resoulving:把这个类的常量池中的所有的符号引用改变成直接引用
+5.Initializing:执行静态初始化程序,把静态变量初始化成指定的值
+
+2-3虚拟机内存管理
+Java栈区
+作用:它存放的是Java方法执行时的所有的数据
+组成:由栈帧组成，一个栈帧代表一个方法的执行
+
+Java栈帧
+作用:每个方法从调用到执行完成就对应一个栈帧咋虚拟机栈中从入栈到出栈
+组成:局部变量表、栈操作数、动态链接、方法出口
+
+本地方法栈
+作用:专门为native方法服务的
+
+方法区(永远占据内存的)
+作用:存储被虚拟机加载的类信息、常量、静态变量、即时编译器编译后等数据
+
+堆区
+作用:所有通过new创建的对象的内存都在堆中分配
+特点:是虚拟机中最大的一块内存,是GC要回收的部分
+堆区有一个新生代区和老生代区的概念并且是连续的，我们new一个对象就是在新生代区中，然后当我们的新生代区满了的时候会通过一定的算法把新生代区中的对象扔到老生代区中，这样我们的新生代区就有空间可以继续生成了
+
+2-4垃圾回收详解
+
+3-2Android ClassLoader种类详解
+
+ClassLoader中类
+BootClassLoader：和Java中的BoostrapClassLoader几乎一样，加载FrameWork层的字节码文件
+PathClassLoader:和Java中的APPClassLoader几乎一样，是加载我们已经安装到APP中的字节码文件
+DexClassLoader:和Java中的CustomClassLoder几乎一样，是用来加载指定目录中的字节码文件
+BaseDexClassLoader:PathClassLoader和DexClassLoader都是它的一个子类
+在Activity的onCreate()中调用如下的代码
+  ClassLoader classLoader = getClassLoader();
+        Log.e(TAG, classLoader.toString());//打印PathClassLoader
+        
+        while (classLoader.getParent() != null) {
+            classLoader = classLoader.getParent();
+            Log.e(TAG, classLoader.getParent().toString());//打印BootClassLoader
+        }
+
+我们可以验证到只需要BootClassLoader和PathClassLoader就行了，对于一般的应用来说
+
+3-3Android ClassLoader特点  
+特点及作用
+双亲代理模型的特点:如果要加载一个类，首先会看当前的类是否已经加载，如果有则返回，没有的话会去访问它的父加载器，如果父加载器已经加载了，那么就去返回，否则还去继续走父亲。如果还没有则跑到子加载器去加载
+
+带来如下两个功能
+类加载的共享功能:这样可以避免一个类重复加载
+类加载的隔离功能:这样可以避免我们去冒充系统的类
+
+3-4ClassLoader源码讲解
+
+热修复的基本概念作用:
+
+技术选型
+1.我们的需求是什么，需求是衡量一切的标准
+2.能满足需求的条件下，那个学习成本最低
+3.学习成本一样的情况下，优先选择大公司的方案
+
+AndFix介绍
+为什么有些需要在根目录的build.gradle中的classPath也添加依赖呢，原因在于，像子目录中的android闭包是一个类，apply是一个方法。然后如果我想新加一个比如mobsdk，那么就相当于引用了额一个新的Gradle类，所以就需要新增东西在classPath里面。只能修复方法级别的bug，且立刻生效。因为他是一个替换类的实现
+
+Tinker
+Tiner是微信官方的Android热补丁解决方案，它支持动态下发代码、So库以及资源，让应用能够在不需要重新安装的情况下实现更新。当然，你也可以使用Tinker来更新你的插件。
+
+
+Tinker核心原理
+1.基于android原生的ClassLoader，开发了自己的ClassLoader
+2.基于android原生的aapt,开发了自己的aapt
+3.微信团队自己基于Dex文件的格式，研发了DexDiff算法
+
+Tinker是微信官方的Android热补丁解决方案,它支持动态下发代码、so库以及资源,让应用能够在不需要重新安装的情况下实现更新。当然，你也可以使用Tinker来更更新你的插件。
+
+
+插件化
+出现背景
+1.app的体积越来越大，功能模块越来越多
+2.模块耦合度高，协同开发沟通成本极大
+3.方法数超过65535,占用内存过大
+
+如何解决
+1.将一个大的apk按照业务分隔成多个小的apk
+2.每个小的apk即可以独立运行又可以作为插件运行
+
+哪些优势
+1.业务模块完全解耦
+2.高效并行开发(编译速度更快)
+3.按需加载，内存占用更低等等
+
+基本概念
+1.宿主:主APP,可以加载插件,也称为Host
+2.插件:插件APP，被宿主加载的APP，可以是普通APP一员的APK文件
+3.插件化:将一个应用按照宿主插件的方式改造就叫插件化
+
+APK文件接口几乎一致，就是lib下的so会多出很多由模块名字组成的so，然后那些小的so就是那些APK文件来的
+
+与组件化对比
+组件化是一种编程思想,而插件化是一种技术
+组件化是为了代码的高度复用性而出现的
+组件化是为了解决应用越来越大而出现的
+
+与动态更新对比
+1.与动态更新一样,都是动态加载技术的应用
+2.动态更新是为了解决线上的bug或小功能的更新而出现
+3.插件化是为了解决应用越来越庞大而出现
+
+插件化原理
+Manifest处理
+1.构建期进行全量Merge操作
+2.Bundle的依赖单独Merge,生成Bundle的Merge manifest
+3.解析各个Bundle的Merge Manifest得到整包的BundleInfoList
+
+插件类加载
+1.DelegateClassLoader以PatchClassLoader为父ClassLoader,找不到的情况下根据BundleList找到对应的BundleClassLoader
+
+2.BundleClassLoader的父对象为BootClassLoader,包含PathClassLoader对象,先查找当前classLoader,在查找当前PathClassLoader
+
+Bundle:插件
+
+通过AssetManger管理ID的，就平常那些R.id这样的东西，Resource其实最后也是引用的AssetManger，所以Resource更像是一个映射
+
+核心技术 
+1.处理所有插件apk文件中的Manifest文件
+2.管理宿主APK中所有的插件apk信息
+3.为每个插件apk创建对应的类加载器、资源管理器(****)
+

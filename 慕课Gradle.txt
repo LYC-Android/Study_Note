@@ -1,0 +1,956 @@
+1-1课程导学
+使用程序代替传统的XML配置，项目更构建灵活
+
+2-2什么是领域特定语言DSL？
+领域特定语言DSL介绍
+核心思想:求专不求全,解决特定问题
+解决某一特定领域的问题。和Java即可以做服务端，又可以做Android端相比。它是小而精，Java是大而广
+
+2-3Groovy初探
+Groovy介绍
+是一种基于JVM敏捷开发语言
+结合了Python、Ruby和Smalltalk的许多强大的特性
+groovy可以与Java完美结合,而且可以使用java所有的库
+
+Groovy特性
+语法上支持动态类型，闭包等新一代语言特性
+无缝集合所有已经存才的Java类库
+即支持面向对象编程也支持面向过程编程
+
+Groovy优势
+一种更加敏捷的编程语言
+入门非常的容易，但功能非常的强大
+即可以作为编程语言也可以作为脚本语言
+
+3-5Groovy开发环境的配置
+1.百度搜索Groovy，并在apache官网下载SDK包
+2.使用IDEA新建一个groovy工程，并且制定刚刚下载好的groovy目录
+3.新建一个groovy类，直接输出一句话 Hellow Groovy即可
+4.其实背后都是编译器帮我们编译成Java代码
+
+4-2Groovy基础语法讲解
+Groovy中的变量
+变量的类型:
+           1.基本类型:int,String,double等。可是由于当我们这样定义在去拿class的时候会发现是一个对象类型，所以说，groovy中不存在基本类型也说得过去
+           2.对象类型:Integer、Double等
+
+变量的定义：
+           1.强类型定义方式:即java的那种定义方式:  int a=1;  String b="java"
+           2.弱类型def定义方式:即 def a="1"  def b=2 这种的话groovy会自行判断类型然后赋予它相对应的值。
+           建议自己做的项目用def。因为可以随心所欲的改成自己想要的类型，如果是和别人合作的话，建议使用强类型定义。因为不使用强类型的话，别人不知道你需要什么参数类型，就很尴尬了。
+
+
+4-3String讲解
+单引号: String a='I am single'
+三引号  String a='''
+
+line 1
+line 2
+line 3
+'''
+
+双引号:可运算的字符串
+def sum="The sum of 2 and 3 equals ${2+3}"//可扩展做任意的表达式
+单引号三引号都是String类型，而双引号是GString类型。
+
+4-4字符串的方法
+
+
+
+4-5逻辑控制
+switch case中的变量可以是任意数据类型，不再像java那样局限于char，int，string，enum
+
+//对范围的for循环
+def sum=0
+for(i in 0..9){
+	sum+=i
+}
+
+//对List的循环
+for(i in [1,2,3,4,5,6,7,8]){
+	sum+=i
+}
+
+//对Map进行循环
+for(i in ['lili':1,'luck':2]){
+	sum+=i.value
+}
+
+4-6闭包详解之基本使用
+
+groovy中闭包的使用
+def clouser={println "LYC"}
+clouser()
+clouser.call()
+上面的就是一个最简单的闭包
+
+如果我们想要使用参数的话，就这样
+def clouser={String name-> println "Hellow ${name}"
+
+由于Groovy中有一个默认的参数IT，所以就默认这样
+def clouser={println "hellow ${it}"}
+
+由于闭包都是有返回值的，最后一行是什么就返回什么，如果什么都不返回就得到值是一个 null
+
+4-7groovy中闭包的使用详解
+1.与基本类型的集合使用
+//用来求指定nember的阶乘
+int fab(int number){
+	int result=1
+	1.upto(number ){num->
+	result*=num
+	}
+}
+主要是进去源码看他的闭包是否需要传多几个参数，然后源码那里会有3个参数，可是我这里只有2个参数，是因为一个是调用的吧。我是这么想的
+
+4-8字符串与闭包结合使用
+2.与字符串
+String str = 'Hellow 2 groovy'
+println str.find{s->
+s.isNumber()
+}
+
+源码
+   /**
+     * Finds the first value matching the closure condition.
+     *
+     * <pre class="groovyTestCase">
+     * def numbers = [1, 2, 3]
+     * def result = numbers.find { it > 1}
+     * assert result == 2
+     * </pre>
+     *
+     * @param self    an Object with an iterator returning its values
+     * @param closure a closure condition
+     * @return the first Object found or null if none was found
+     * @since 1.0
+     */
+    public static Object find(Object self, Closure closure) {
+        BooleanClosureWrapper bcw = new BooleanClosureWrapper(closure);
+        for (Iterator iter = InvokerHelper.asIterator(self); iter.hasNext();) {
+            Object value = iter.next();
+            if (bcw.call(value)) {
+                return value;
+            }
+        }
+        return null;
+    }
+首先可以看到，先把传入的闭包包装成一个boolean类型的闭包，然后我们可以看到if那一行里面调用这个闭包的时候，是需要传入一个参数的，所以我们定义的闭包也需要一个参数，然后可以看到，当满足的时候就返回迭代器的东西，也就是找到的东西,即可
+
+
+4-9闭包进阶详解
+闭包关键字: this、owner 、delegate
+/**
+ * 输出的都是脚本的对象,例如我定义了Test.groovy，输出的就是Test的某个对象
+ * this:Test@932bc4a
+ owner:Test@932bc4a
+ delegateTest@932bc4a
+ */
+def customClouser={
+    println "this:"+ this//代表闭包定义出的类
+    println "owner:" + owner//代表闭包定义出的类或者对象
+    println "delegate"+delegate//代表任意对象,默认与owner一致
+}
+customClouser.call()
+
+
+//定义一个内部类
+class person{
+def static customeClousr={
+    println "this :"+this
+    println "owner"+ owner
+    println "delegate" + delegate
+}
+}
+person.customeClousr.call()
+这里输出的this,owner delegate都是相同的，
+
+
+def nestClosue={
+    def innerCluouser={
+        println "this:"+ this
+        println "owner:" + owner
+        println "delegate"+delegate
+    }
+      innerCluouser.delegate=1//这里为delegate指定，则owner和delegate就不同了。然后owner和this，是不可以像delegate那样任意修改的
+}
+这里在闭包中定义了闭包则，this和owner就不同了，this还是指向类，而owner就是指向闭包了，delegate没有特殊指定所以还是一致
+
+
+
+闭包的委托策略
+class Student{
+    def name
+    def customClouser={
+        println  name
+    }
+}
+class Teacher{
+    def name
+}
+
+Teacher teacher = new Teacher(name: "LYC")
+Student student = new Student(name: "LYCCCC")
+
+student.customClouser.delegate=teacher//设置委托
+student.customClouser.resolveStrategy=Closure.DELEGATE_ONLY//设置只要委托,所以会在调用这个闭包的时候，去找Teacher中的name
+student.customClouser.resolveStrategy=Closure.OWNER_FIRST//默认使用这个，用于调用自身的类
+student.customClouser.resolveStrategy=Closure.DELEGATE_FIRST//如果委托的类中没有所要的参数，会报错
+student.customClouser.call()
+
+4-10列表学习上
+//ArrayList list=new ArrayList()//java这样定义
+def list = [1, 2, 3, 4, 5]//groovy这样定义一个数组
+println list.class//输出arraylist
+println list.size()//输出5
+
+def lists = [1, 2, 3, 4, 5] as int[]//这样把一个arraylist强转为int数组
+int[] arrays=[1,2,3,4,5]//这样定义一个数组
+println lists.class
+
+4-11列表学习下
+//定义一个学生对象
+class Student{
+    int point;
+    String name;
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "point=" + point +
+                ", name='" + name + '\'' +
+                '}';
+    }
+}
+
+Student student = new Student(point: 98, name: "LYC")
+Student student1 = new Student(point: 83, name: "LYA")
+Student student2 = new Student(point: 10, name: "ZF")
+def list = [student, student2, student1]//用个arraylist存放这些学生对象
+list.sort{//这里用闭包，重写他的比较规则
+    return  it.point
+}
+println list
+
+def findList = [-3, 9, 6, 2, -1, 1, 5]
+//int result=findList.find {return it%2==0}//获得第一个偶数
+//def resutlt=findList.findAll {return it%2==0}//获得所有的偶数
+
+//def result=findList.any {return it%2!=0}//是否有一个数字不是偶数的
+//def result=findList.every {return it%2!=0}//数组都不是偶数吗
+println findList.max {return Math.abs(it)}//绝对值最大值
+println findList.min()//最小值
+
+4-12映射详解上
+def colors = [red  : '0f0f0f',
+              green: '00ff00',
+              blue : '0000ff']
+//索引方式
+println colors['red']
+println colors.red
+//添加元素
+colors.yellow = 'ffooff'//为map添加一个key 为yellow 值为 ffooff的元素
+colors.ccccc = [a: '1', b: '2']//为map添加一个键为ccccc值为一个hashmap的元素
+默认为LinkhashMap
+
+
+4-13映射详解下
+def colors = [red  : '0f0f0f',
+              green: '00ff00',
+              blue : '0000ff']
+              
+//带索引的遍历
+colors.eachWithIndex { Map.Entry<String, String> entry, int i ->
+    println 'entry.key='+entry.key
+    println 'entry.value'+entry.value
+}
+//直接遍历
+colors.each {def color->
+    color.key+color.value
+}
+
+4-14 范围详解
+def range = 1..10
+range[0]//输出第一个数字
+range.contains(10)//输出是否包含10
+range.from//输出from，即第一个数字
+range.to//输出to,即最后一个数字
+//范围这个数据结构继承于List主要用来当存放一些简单的数据的时候，不用使用重量级的list
+
+//遍历
+range.each {
+    println it
+}
+
+for (i in range) {
+    println i
+}
+
+4-15面向对象讲解(上)
+/**
+ * 1.Groovy中默认方法，类等都是public 类型的
+ * 2.像这样直接调用person.name 都是调用Person的get/set方法
+ */
+class Person {
+    String name
+    Integer age
+
+    def increageAge(Integer integer) {
+        this.name+=integer
+    }
+}
+
+//interface中不可以定义非public方法，其他的与java的一致
+interface Action{
+	void eat()
+	void drink()
+}
+
+4-16面向对象讲解(中)
+
+Groovy元编程:Groovy运行时编程
+
+在Groovy编程中，如果我们使用一个类的方法，而这个方法不存在，那么不会像Java那样编译就报错，而是会走一个流程，先看有没有运行时加载，即metaClass，然后就是看这个类有没有重写methodMissing方法，然后就是看有没有重写invokeMethod 方法，如果都没有才会在运行的时候报错 MethodMissingError
+
+class Person {
+    String name
+    Integer age
+
+    def increageAge(Integer integer) {
+        this.name+=integer
+    }
+
+    /**
+     * 一个方法找不到时候，用它替代
+     * @param name 方法的名字
+     * @param args 方法的参数
+     * @return
+     */
+    def invokeMethod(String name, Object args) {
+        return "the method is ${name},the params is ${args}"
+    }
+
+
+    /**
+     * 一个方法找不到时候，用它替代
+     * @param name 方法的名字
+     * @param args 方法的参数
+     * @return
+     */
+    def methodMissing(String name, Object args){
+        return "the method ${name} is missing"
+    }
+}
+
+
+//为类在运行时动态添加一个属性,即上面提到的metaClass
+Person.metaClass.sex = 'male'
+def person = new Person(name: 'LYC', age: 15)
+
+println person.sex
+person.sex = 'female'
+println "the new sex is ${person.sex}"
+//为类动态添加一个方法
+Person.metaClass.upCase={
+    sex.toUpperCase()
+}
+println person.upCase()
+
+4-17面向对象学习(下)
+由于单单在一个script中定义的一个metaClass不能在全局中使用，如果想要全局使用需要在调用metaClass之前使用这个
+  ExpandoMetaClass.enableGlobally()
+
+
+5-2json操作详解
+class Person{
+    String name
+    int age
+}
+
+def list = [new Person(name: "LYC", age: 15),
+            new Person(name: "LYA", age: 16)]
+
+//把对象转化为json
+def json = JsonOutput.toJson(list)
+println json//直接使用jsonOutput.tojson即可实现输出
+println JsonOutput.prettyPrint(json)//带格式的输出一个json，可以更直观的看到json
+
+//解析json成一个对象
+def jsonSlpuer = new JsonSlurper()
+def response = jsonSlpuer.parseText(json)
+println response.name  
+
+
+5-3XML文件解析
+final String xml = '''
+    <response version-api="2.0">
+        <value>
+            <books id="1" classification="android">
+                <book available="20" id="1">
+                    <title>疯狂Android讲义</title>
+                    <author id="1">李刚</author>
+                </book>
+                <book available="14" id="2">
+                   <title>第一行代码</title>
+                   <author id="2">郭林</author>
+               </book>
+               <book available="13" id="3">
+                   <title>Android开发艺术探索</title>
+                   <author id="3">任玉刚</author>
+               </book>
+               <book available="5" id="4">
+                   <title>Android源码设计模式</title>
+                   <author id="4">何红辉</author>
+               </book>
+           </books>
+           <books id="2" classification="web">
+               <book available="10" id="1">
+                   <title>Vue从入门到精通</title>
+                   <author id="4">李刚</author>
+               </book>
+           </books>
+       </value>
+    </response>
+'''
+def slurper = new XmlSlurper()
+def text = slurper.parseText(xml)
+//println text.value.books[0].book[0].title.text() // 调用.text()方法输出第一个book节点下的title
+//println text.value.books[0].book[1].@available //调用 @属性方法，输出指定节点下属性的值
+
+//对节点的遍历查询
+def list = []
+text.value.books.each{books->
+    books.book.each { book ->
+        if (book.author.text().equals('李刚')) {
+            list.add(book.title.text())
+        }
+    }
+}
+println list.toListString()
+
+5-4XML文件生成
+/**需要生成下面这样的一个XML文件
+ * <LYC type='current' count='3' mainstream='true'>
+ <language flavor='static' version='15'>Java</language>
+ <language flavor='dynamic' version='13'>JavaScript</language>
+ <language flavor='dynamic' version='16'>HTML</language>
+ </LYC>
+ */
+def sw = new StringWriter()
+def xmlBuilder = new MarkupBuilder(sw)
+xmlBuilder.LYC(type:'current',count:'3',mainstream:'true') {//这里创建根节点
+    language(flavor: 'static', version: 15, 'java')//由于我们的language节点下需要一个值java所以我们就不需要再给它传键值就行
+    language(flavor: 'dynamic', version: 13, 'JavaScript')
+    language(flavor: 'dynamic', version: 16, 'HTML')
+}
+println sw
+
+//由于平常我们都是从服务器那里拿到对象然后生成XML而不是像刚刚那样手写的，所以做个大概的模拟
+class Language {
+    String flavor
+    int version
+    String value
+}
+class LYC {
+    String type = 'current'
+    int count=3
+    boolean  mainstream=true
+    def datas=[new Language(flavor: 'static',version: 3,value: 'Java'),
+    new Language(flavor: 'dynamic',version: 13,value:'JavaScript'),
+    new Language(flavor: 'dynamic',version: 16,value: 'HTML')]
+}
+
+
+
+def sw = new StringWriter()
+def xmlBuilder = new MarkupBuilder(sw)
+def lyc = new LYC()
+xmlBuilder.LYC(type:lyc.type,count:lyc.count,mainstream:lyc.mainstream){
+    lyc.datas.each {
+        language(flavor:it.flavor,version:it.version,it.value)
+    }
+}
+println sw
+
+5-5groovy文件处理详情上
+1.所有Java对文件的处理类,groovy都可以使用
+2.groovy扩展了许多更加快捷和强大的方法
+
+def file=new File('../HellowGroovy.iml')//新建一个File
+//file.eachLine {//用这个就是读取每一行，然后使用闭包进行一个遍历
+//    println it
+//}
+//def text = file.getText()//用这个可以直接就读到文件的所有的内容
+//println text
+//
+//def result=file.readLines()//用这个可以返回所有的行是一个list
+
+//如果我们想要读取文件不是读取那么多可以使用下面这个
+def reader=file.withReader {
+    char[] buffer = new char[100]
+    it.read(buffer)
+    return buffer//只读100个字符并且将它返回去
+}
+
+println copy('../HellowGroovy.iml','../HellowGroovy2.iml')
+//下面这个是一个实例复制文件的例子
+def copy(String resourcePath, String tagetPath) {
+    //首先创建目标文件
+    try {
+        def desFile = new File(tagetPath)
+        if (!desFile.exists()) {
+            desFile.createNewFile()
+        }
+        //开始copy
+        new File(resourcePath).withReader { reader ->
+            def lines = reader.readLines()
+            desFile.withWriter { writer ->
+                lines.each {
+                    writer.write(it + "\r\n")
+                }
+            }
+        }
+        return  true
+    } catch (Exception e) {
+        println e
+    }
+    return false
+}
+
+6-2gradle执行流程的详解
+gradle先执行什么后执行什么
+首先我们执行一个简单的gradle build命令，会看到会先有一个loading阶段，然后到一个configuration阶段，然后就开始有一堆的东西输出了，其实是经历了3个阶段
+
+Initialization初始化阶段
+     |
+     |解析整个工程中所有project,构建所有的Project对应的project对象
+     |
+     |
+Configuration配置阶段
+     |
+     |解析所有的projects对象中的task,构建好所有task的拓扑图(有向无环图)
+     |
+     |
+Execution执行阶段
+     |
+     |执行具体的task及其依赖task
+     |
+    \|/          
+
+6-3gradle生命周期监听
+/**
+ * 配置阶段开始前的回调监听
+ */
+this.beforeEvaluate {}
+
+/**
+ * 配置结束的回调监听
+ */
+this.afterEvaluate {
+    println '配置阶段执行完毕'
+}
+/**
+ * gradle执行完毕的回调监听
+ */
+this.gradle.buildFinished {
+    println '执行阶段执行完毕'
+}
+
+然后在setting.gradle里面输出话也可以看到，证明我们的初始化阶段就是在哪里开始执行的。
+我们在执行gradle build命令的时候会输出一堆东西,是因为我们其实是执行一个叫build 的Task，而这个Task要执行它就必须要执行很多的命令，因为依赖的关系。
+
+
+7-3project相关api详解上
+/**
+ * 前面我们用到projects然后可以看到我们当前工程下的所有project，下面我们就来实现下
+ * 下面的执行是在配置阶段即执行了
+ */
+this.getAllProject()
+def getAllProject(){
+    this.getAllprojects().eachWithIndex { Project project, int index ->
+        if (index == 0) {
+            println "Root Project : ${project.name}"
+        } else {
+            println "+--- ${project.name}"
+        }
+    }
+}
+//getSubprojects()//返回的是一个set
+//getRootProject()//返回根project
+//getParent()//返回当前调用的父project，如果是在根目录，则会返回空，报错，因为是一个树根已经没有父节点了
+
+7-4project api详解下
+//在更目录，为特定的moudle设置属性
+project('app') { project ->
+    apply plugin: 'com.android.application'
+    group 'com.example.lyc'
+    version '1.3.4'
+    dependencies{}
+    android{
+
+    }
+}
+//为所有的Project设置某个属性
+allprojects{
+    group 'com.example.lyc'
+    version '1.3.4'
+}
+//为所有的子project设置属性
+subprojects { project ->
+    if (project.plugins.hasPlugin('com.android.application')) {//当有这个plugin的时候才进行设置
+        println project.name
+    }
+}
+
+7-5属性相关api详解上
+由于在Gradle中的源码 为我们定义了很少的属性，而专门为我们搞了一个ext来让我们定义各种自己想要用的属性
+1.根工程中使用的东西在子project中会得到继承
+2.根工程顶一个ext{}属性，然后在子project中就可以使用
+
+7-6属性相关API详解下
+在gradle.properties中只可以定义key value的形式，且返回的都是object，比如我们在哪里定一个
+isLoadTest=fales
+然后在setting.gradle中定义一个
+if(hasProperty('isLoadTest')?isLoadTest.toBoolean():fales){
+	include(':Test')
+}
+然后我们就可以根据更改isLoadTest来修改了是否要加载Test这个project了
+
+
+7-7文件属性操作详解
+//常用的获取的文件路径
+println "the root file path is:${getRootDir().absolute}"
+println "the build file path is: ${getBuildDir().absolute}"
+println "the project file path is: ${getProjectDir().absolute}"
+
+//可以直接使用file方法来差路径，虽然和前面学的file类似，可是这个的话就不用传绝对路径了
+println getContent('common.gradle')
+def getContent(String path) {
+    try {
+        def file = file(path)
+        return file.text
+    } catch (Exception e) {
+        println "file not exit"
+    }
+    return null
+}
+
+//gradle为我们提供的复制api
+copy {
+    from file('build/output/apk/')
+    into getRootProject().getBuildDir().parent+'/apk/'
+    rename {}//重命名
+    exclude {}//去除某些
+}
+//对文件树进行遍历
+fileTree('build/outputs/apk'){FileTree fileTree->
+    fileTree.visit {FileTreeElement element->
+        println "the file name is :"+element.name
+    }
+}
+
+7-8依赖相关api讲解及实战
+buildscript {
+    //配置我们工程的仓库地址
+    repositories {
+        jcenter()
+        maven {//加入需要设置maven仓库
+            name 'LYC'
+            url 'http://12222'
+            credentials {//加入设置了maven仓库密码，其实这个在源码里面也有例子
+                username = "admin"
+                password="admin"
+            }
+        }
+    }
+    //配置我们工程的“插件”依赖地址
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.0'
+    }
+}
+
+7-9Gradle外部命令实战
+为Gradle执行一个外部命令，即类似于Windows的cmd命令
+task(name:'apkcopy'){
+    doLast {
+        //gradle 执行阶段执行
+        def source = this.buildDir.path + '/outputs/apk'
+        def destationPaht = ''
+        def command="mv -f ${source} ${desationPath}"//这是mac操作系统的一个操作功能
+        exec {//这一部分都是固定写法的，唯一变的就是一个command
+            try {
+                executable 'bash'
+                args '-c', command
+                println "the command is execute success"
+            } catch (GradleException e) {
+                println "the command is execute failed"
+            }
+        }
+    }
+}
+
+8-2Task定义和配置
+/*
+直接通过task函数去创建
+我们可以通过查看Project源码发现有一个函数就是叫task，我们只不是调用了这个函数而已，然后传入一个String 和闭包由于groovy特性写成下面那样而已
+group和description并不是必要的，就是一个为了管理，一个为了像我们写java那样的注释而已
+ */
+task hellowTask(group: 'LYC',description:'task  study'){
+    println 'i am hellowTask'
+}
+/**
+ * 通过tasks返回的taskContainer进行一个创建方法的调用，2个的是一样的效果,都是通过添加到TaskContainer中进行管理
+ */
+tasks.create(name:'hellowTask2'){
+    println 'i am hellowTask 2'
+}
+
+
+8-3Task执行讲解与实战
+//上一节课我们介绍的方法我们会发现，它们都是在配置阶段,即生成Task有向无环图的时候,上面的都是会输出的，那么我们怎么才能让我们的代码输出在执行阶段呢?使用doLast,doFirst
+task hellowTask{
+    doFirst{
+        println "我在执行阶段才执行"
+    }
+}
+hellowTask.doFirst{
+    println "我可以在外部定义"
+}
+//下面我们来实战用下
+this.afterEvaluate {//通过这个方法，避免我们在寻找的时候task还没创建
+    def statTime,endTime
+    task prebuildTask = tasks.findByName("preBuild")//通过taskContainer找到prebuild这个第一个执行的Task，至于为什么是第一个我们可以通过看Gradle的输出
+    prebuildTask.doFirst {
+        statTime=System.currentTimeMillis()
+    }
+   task buildTask= tasks.findByName("build")
+buildTask.doLast {
+    endTime = System.currentTimeMillis()
+    println "build Time = ${endTime-statTime}"
+}
+}
+
+8-5Task依赖详解及实战
+task taskX{
+    doLast{
+        println  'task x'
+    }
+}
+
+task taskY{
+    doLast{
+        println 'task Y'
+    }
+}
+//这里我们定义了在执行taskZ之前需要执行taskX，taskY。至于taskX,taskY的执行顺序则是随机的
+task taskZ(dependsOn :[taskX,taskY]){
+    doLast{
+        println 'task Z'
+    }
+}
+//还可以在外部定义
+//taskZ.dependsOn [taskX,taskY]
+
+//下面这里演示了动态加载依赖任务
+task taskZ{
+dependsOn tasks.findAll {task->
+    return task.name.startsWith('lib')
+}
+doLast {
+    println 'task Z excute'
+}
+}
+task lib1<<{
+    println 'lib1'
+}
+task lib2<<{
+    println 'lib2'
+}
+task nolib<<{
+    println 'nolib'
+}
+
+8-6 Task输入输出
+Task inpust Task output是Task的两个属性。通过制定TaskA的输出作为TaskB的输入就可以关联起来两个Task
+
+/*下面的代码我们可以看到为它们指定了同一个输入输出destFile，使得两个没有关联task关联起来。如果单独执行的话是没有任何的作用的input *和output。用到的还是ext中定义的东西，不会由于前一个任务没有执行，导致没有输入而执行失败，只是一个搞2个任务的执行顺序的工具，当它们有一个dependon的时候
+*/
+ext {
+  versionName = rootProject.ext.android.versionName
+  versionCode = rootProject.ext.android.versionCode
+  versionInfo = 'App的第2个版本，上线了一些最基础核心的功能.'
+  destFile = file('releases.xml')
+  if (destFile != null && !destFile.exists()) {
+    destFile.createNewFile()
+  }
+}
+
+task writeTask {
+  inputs.property('versionCode', this.versionCode)
+  inputs.property('versionName', this.versionName)
+  inputs.property('versionInfo', this.versionInfo)
+  outputs.file this.destFile
+  doLast {
+    //将输入的内容写入到输出文件中去
+    def data = inputs.getProperties()
+    File file = outputs.getFiles().getSingleFile()
+    def versionMsg = new VersionMsg(data)
+    //将实体对象写入到xml文件中
+    def sw = new StringWriter()
+    def xmlBuilder = new MarkupBuilder(sw)
+    if (file.text != null && file.text.size() <= 0) {
+      //没有内容
+      xmlBuilder.releases {
+        release {
+          versionCode(versionMsg.versionCode)
+          versionName(versionMsg.versionName)
+          versionInfo(versionMsg.versionInfo)
+        }
+      }
+      //直接写入
+      file.withWriter { writer -> writer.append(sw.toString())
+      }
+    } else {
+      //已有其它版本内容
+      xmlBuilder.release {
+        versionCode(versionMsg.versionCode)
+        versionName(versionMsg.versionName)
+        versionInfo(versionMsg.versionInfo)
+      }
+      //插入到最后一行前面
+      def lines = file.readLines()
+      def lengths = lines.size() - 1
+      file.withWriter { writer ->
+        lines.eachWithIndex { line, index ->
+          if (index != lengths) {
+            writer.append(line + '\r\n')
+          } else if (index == lengths) {
+            writer.append('\r\r\n' + sw.toString() + '\r\n')
+            writer.append(lines.get(lengths))
+          }
+        }
+      }
+    }
+  }
+}
+
+class VersionMsg {
+  String versionCode
+  String versionName
+  String versionInfo
+}
+
+task readTask {
+  //指定输入文件为上一个task的输出
+  inputs.file this.destFile
+  doLast {
+    //读取输入文件的内容并显示
+    def file = inputs.files.singleFile
+    println file.text
+  }
+}
+//由于Gradle规定，输出先输出，所以定义了output的writeTask会先执行,
+task taskZ {
+  dependsOn writeTask, readTask
+  doLast {
+    println '输入输出任务结束'
+  }
+}
+
+8-7挂接自定义Task到构建过程中
+task taskX{
+    doLast{
+        println "task X"
+    }
+}
+task taskY{
+    mustRunAfter taskX
+    doLast{
+        println "task Y"
+    }
+}
+task  taskZ{
+     mustRunAfter taskY
+     doLast{
+         println "task z"
+     }
+ }
+
+参考tinker的进行一个构建的插入，还是需要听过几遍的
+反正就是新建一个任务，然后通过dependsOn和mustRunAfter进行一个挂接到生命周期中去，需要去Android的plugin中了解到自己需要的
+
+9-4 自定义plugin
+Plugin就是把完成某些任务的特定的task封装在一起
+1.创建一个工程，然后几乎和Android的差不多，只不过build.gradle引用的是		groovy插件 (apply plugin: 'groovy')，java->groovy res->resources, 然后还需要在build.gradle中表明sourceSets,可以参考下载的资料的buildSrc工程
+2.创建一个类，让这个类实现Plugin<Project>接口，然后我们发下会需要重写一个apply(Project target){}这个方法就是当我们的插件被引如的时候需要执行 的方法，target代表的是引如该插件project
+3.那我们怎么才可以让别人引用我们的插件呢？就是在我们第一步那里定义的resources下的XXXX.properties,在这个文件中声明implementation-class=com.imooc.gradle.study.GradleStudyPlugin。然后我们就可以在其他的工程中引入这个插件，例如apply plugin:'lyc'
+4.创建一个实体类
+class ReleaseInfoExtension {
+
+    String versionCode
+    String versionName
+    String versionInfo
+    String fileName
+
+    ReleaseInfoExtension() {
+
+    }
+
+    @Override
+    String toString() {
+        """| versionCode = ${versionCode}
+           | versionName = ${versionName}
+           | versionInfo = ${versionInfo}
+           | fileName = ${fileName}
+        """.stripMargin()
+    }
+}
+5.然后我们就可以在刚刚定义的plguin里面写这个东西
+ @Override
+    void apply(Project target) {
+        target.extensions.create('lyc',ReleaseInfoExtension)
+    }
+6.然后我们就可以在引用这个插件的地方这样
+lyc{
+	versionCode=1.0.0
+	versionName=1.1.1
+	versionInfo=test
+	fileName=LYC
+}
+9-5自定义plugin 下
+自定义Task
+class ReleaseInfoTask extends DefaultTask｛
+//这里定义group和description
+  ReleaseInfoTask() {
+        group = 'imooc'
+        description = 'update the release info'
+    }
+
+    /**
+     * 执行于gradle执行阶段的代码，doLast,doFirtst就是在这个之前之后的
+     */
+    @TaskAction
+    void doAction() {
+    //拿到在plugin中定义的东西
+       String versionCodeMsg = project.extensions.
+                imoocReleaseInfo.versionCode
+        String versionNameMsg = project.extensions.
+                imoocReleaseInfo.versionName
+        String versionInfoMsg = project.extensions.
+                imoocReleaseInfo.versionInfo
+        String fileName = project.extensions.
+                imoocReleaseInfo.fileName
+    }
+｝
+    	    
+9-6Android及Java插件对gradle的扩展
+http://avatarqing.github.io/Gradle-Plugin-User-Guide-Chinese-Verision/advanced_build_customization/manipulation_taskstask.html
+BaseExtention.class ->android闭包中可以配置的关键字
+BaseVariant.class->android插件引入的task在这里
+applicationVariants.all{variant->
+    def output=variant.outputs.first()//由于Android把这个定义成了一个list，可是它只有一个返回所以我们就用第一个就好了，为了日后的扩展吧
+    output.outputFile=new File(output.outputFile.parent,"${variant.versionName}+${variant.versionCode}+${variant.baseName}.apk")
+}         
+
+
+10-1持续集成介绍及Jenkins作用
