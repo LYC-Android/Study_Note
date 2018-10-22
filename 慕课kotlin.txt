@@ -1,0 +1,138 @@
+1-2什么是Kotlin
+1.使用IDEA新建一个gradle工程，勾选上kotlin
+2.建好工程后新建一个目录,src/main/kotlin
+3.新建一个HellowWorld.kt
+package com.example.lyc
+
+/**
+ * Created by lyc on 2018/10/22.
+ */
+fun main(args: Array<String>) {
+    println("Hellow Wrold")
+}
+
+2-1Boolean数据类型
+类比于java中的boolean和Boolean
+val aBoolean:Boolean=true
+val anotherBoolean:Boolean=false
+
+2-2Numebr数据类型
+和Java的长度一样，不过都是首字母大写如Int ，Long Short
+
+2-3拆箱装箱与Char数据类型
+在Java中我们是区分装箱类型和基本类型的，但是在kotlin中，我们是不区分的。编译器会根据情况为我们自动使用封装类型还是基本类型的
+
+2-4基础数据类型转换与字符串
+不可隐式转换
+-val anInt:Int=5
+- val aLong:Long=anInt.toLong()编译会报错的，Kotlin不会给我们犯错的机会
+
+String部分
+val aString: String = "HelloWorld"
+val fromChar: String = String(charArrayOf('H', 'e', 'l', 'l', 'o', 'W', 'o', 'r', 'l', 'd'))
+fun main(args: Array<String>) {
+    println(aString== fromChar)
+    println(aString=== fromChar)
+}
+丛上面的例子我们可以看到== 相当于java的equals，===相当于java的==
+
+val a:Int=1
+val b:Int=2
+val specialString:String="""
+11111111
+22222222
+"""
+fun main(args: Array<String>) {
+    println("a+b=${a+b}")
+    println(specialString)
+}
+从上面的例子我们可以看到kotlin可以实现类似于groovy中的字符串方法
+
+2-5类和对象
+class Person(username:String,ID:Int): People(username,ID) {//这里的:代表的是继承
+	//这里的{}可以省略
+}
+open class People(var name:String ,var IIID:Int){//这里需要声明open不然的话不能继承
+    init {
+        println("usernmae is $name,Id is $IIID,the class is ${this.javaClass.name}")
+    }
+}
+fun main(args: Array<String>) {
+    val person:Person= Person("lyv",18)
+}
+
+2-6空类型和只能智能类型转换
+fun getName(): String {
+    return null
+}
+这样的编译是不过的因为java对这种有严格的检测,需要进行如下的处理
+fun getName(): String? {//加了个问号就是可能为null，否则编译不过的
+    return null
+}
+
+fun main(args: Array<String>) {
+    //?:这个运算符相当于为空就返回
+    val name:String= getName()?:return//这个代表如果getname拿到的是null，就返回
+    println(getName()!!.length)//这个是高速编译器getName肯定不是一个null
+}
+
+智能类型转换
+val parent:Parent=Child()
+if(parent is Child){
+	println(parent.name)
+}
+如果是java的话上述代码还需要进行一个强转
+
+val string:String?="Hellow"
+if(String!=null)//加了这个我们就不要在进行一个判断了
+println(string.length)
+
+val parent:Parnet=Parent()
+val child:Child=parent as? child
+像上面这两行代码就是安全的，因为如果转换失败的话就会返回一个null
+
+空类型:
+任意类型都有可空和不可空两种
+- val notNull:String=null//错误,不能为空
+- val nullable:String ?=null//正确，可以为空
+- notNull.length//正确，不为空的值可以直接使用
+- nullable.length//错误,可能为空,不能直接获取长度
+- nullable!!.length//正确，告诉编译器这个东西肯定不为空
+- nullable?.length//正确，若nullable为空,返回空
+
+Java Style类型转换
+- val sub:SubClass=parent as SubClass 
+- 类似于 Java的类型转换,失败则抛异常
+
+安全类型转换
+- val sub:SubClass? =parent as ?SubClass
+- 如果转换失败,返回null，不抛异常
+
+2-7包
+与java一样不过有一个新特性就是
+import  A as  B
+这样的话就可以使用一个类似C++的别名
+
+2-8区间(Range)
+val range: IntRange = 1..1024//[0,1024]
+val rang2:IntRange=1 until 1024//[0,1023] 或者[0,1024)
+val rang3:IntRange=1..-1//
+fun main(args: Array<String>) {
+    println(rang3.contains(3))
+    println(3 in rang3)
+    println(rang3.isEmpty())//返回空
+      for (i in range){//遍历range
+        print("$i,")
+    }
+}
+
+2-9数组(Array)
+val arrayfInt:IntArray= intArrayOf(1,2,3,4)//定义一个Int数组
+val arrayofString:Array<String> = arrayOf("222","罗义诚")//String数组需要这样定义
+
+基本写法:
+- val array:Array<String> =arrayOf(..)
+基本操作
+- print array[i] 输出第i个成员
+- array[i]="Hello" 给第i个成员赋值
+- array.length 数组的长度
