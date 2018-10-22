@@ -136,3 +136,65 @@ val arrayofString:Array<String> = arrayOf("222","罗义诚")//String数组需要
 - print array[i] 输出第i个成员
 - array[i]="Hello" 给第i个成员赋值
 - array.length 数组的长度
+
+3-1常量与变量(val,var)
+什么是常量
+val=value,值类型
+类似于Java的final :public final int x=3      val x=3
+不可以重复赋值:val x=getX()
+编译时常量: const val x=2
+
+什么是变量
+var =variable
+举例:
+- var x="HelloWorld"//定义变量
+- x="HiWorld"//再次赋值
+
+类型推导
+编译器可以推到量的类型
+- val string="Hello"//推导出String类型
+- val int=5 //Int 类型
+- var x=getString()+5//String 类型
+
+3-2函数(funcation)
+什么是函数
+以特定功能组织起来的代码块
+举例
+- fun sayHi(name :String) {println ("Hi ${name}")}
+因为下面这个只有一个语句所以可以写成这个
+-fun sayHi(name:String)=pritln("Hi ${name}")
+
+匿名函数
+val sayHi=fun(name:String)=println("Hi,$name")
+
+带返回值
+fun sum(number1:Int,number2:Int):Int{
+    return number1+number2
+}
+
+可以简写成下面这样的
+fun sum(number1:Int,number2:Int)=number1+number2
+如果没有返回值可以不写 就是Unit
+
+3-3Lambda表达式
+和groovy中的闭包是类似的Lambda表达式，it
+
+fun main(args: Array<String>) {
+   args.forEach ForEach@{
+       if (it=="g") return@ForEach//加了这2个东西才可以在指定地方断点
+       println(it)
+   }
+    println("The end")
+}
+
+args.forEach { println(it) }
+args.forEach(::println)
+上面这2个是等价的，因为println可以传入一个any
+
+什么是Lambda表达式->匿名函数
+例子:
+- val sum={a:Int,b:Int->a+b}
+
+()->Unit 无参，返回值为Unit
+(Int)->Int 传入整数,返回一个整数
+(String ,(String)->String)->Boolean  传入字符串、Lambda表达式,返回Boolean
