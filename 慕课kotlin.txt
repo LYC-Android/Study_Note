@@ -198,3 +198,95 @@ args.forEach(::println)
 ()->Unit 无参，返回值为Unit
 (Int)->Int 传入整数,返回一个整数
 (String ,(String)->String)->Boolean  传入字符串、Lambda表达式,返回Boolean
+
+3-4类成员(成员方法,成员变量)
+定义方法
+写法与普通函数完全一致
+class Hello{
+	fun sayHello(name:String) = println("Hello, $name")
+}
+
+定义属性
+构造方法参数中val/var修饰的都是属性
+类内部也可以定义属性
+class Hello(val aField:Int,notAField:Int){
+	var anotherField:Float=3f
+}
+
+属性访问控制
+属性可以定义getter/setter
+举例:
+val a:Int=0
+  get()=field
+var b:Float=0f
+  set(value){field=value}
+
+属性初始化
+属性初始化尽量在构造方法中完成
+无法在构造方法中初始化,尝试降级为局部变量
+var用lateinit延迟初始化,val用lazy
+可空类型谨慎用null直接初始化
+class X
+class A{
+    var b=3
+    lateinit var c:String
+    var d:Int = 0
+    lateinit var f:X
+    val xxx:X by lazy{
+        println("init X")
+        X()
+    }
+} 
+
+3-5基本运算符
+任何类可以定义或者重载父类的基本运算符
+通过运算符对应的具体函数来定义
+对参数个数做要求，对参数和返回值类型不作要求
+不能像Scala一样定义任意运算符
+class Complex(var real:Double,var image:Double){
+    operator fun plus(complex: Complex):Complex{//关键字声明operator   重载加的方法 plus 因为a+b 就是调用plus方法
+        return Complex(complex.real+real,image+complex.image)
+    }
+
+    override fun toString(): String {
+        return "Complex(real=$real, image=$image)"
+    }
+
+}
+
+fun main(args: Array<String>) {
+    var a = Complex(1.0, 2.0)//1+2i
+    var b = Complex(2.0, 3.0)//2+3i
+    println(a+b)//3+5i
+}
+
+3-6表达式(中缀表达式,分支表达式,when表达式等)
+中缀表达式
+只有一个参数，且用infix修饰的函数
+举例
+calss Book{
+	infix fun on(place:String){...}
+}
+Book() on "My Desk"
+
+分支表达式
+表达式与完备性
+val x=if(b<0) 0 else b
+val x=if(b<0) 0//错误,赋值时,分支必须完备
+
+When表达式
+加强版switch,支持任意类型
+fun main(args: Array<String>) {
+    val y=3
+   val x=when(y){
+     is Int-> print("")
+       in 0..99->print("")
+
+       else -> {
+       }
+   }
+}
+
+
+3-7循环语句
+
