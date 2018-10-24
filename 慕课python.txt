@@ -1,0 +1,72 @@
+3-2数字与浮点型
+整数:int 
+浮点数:float
+不像其他语言一样还需要细分 short long double，只有这2个类型代表数字
+type(1)：输出<class 'int'>
+type(1.0)：输出 <class 'float'>
+type(3/3)：输出<class 'float'> 因为结果是1.0
+type(3//3)：输出<class 'int'>因为结果是1
+
+3-310、2、8、16进制
+3-4各进制的表示与转换
+0b10   二进制的2  bin(10)  将传入的数字转换为 二进制 输出 0b1010
+0o10  八进制的8   oct(0x777) 将传入的数字转换为八进制 输出0o3567
+0x10  十六进制的16 hex(888) 将传入的数字转换为十六进制 输出 0x378
+int(0b1111) 将传入的数字转换为10进制 输出7
+
+3-5数字:布尔类型与复数
+Python中的布尔类型是首字母大写的需要注意这一点,True False 。否则会报错的
+bool()传入一个非空的会返回True，传入一个空的会返回False
+bool({1,2,3})   //True
+bool({})   //False
+bool(0) //False
+bool(1)//True 只要传入一个非零的数字都会返回True
+
+3-6字符串:单引号与双引号
+3-7多行字符串
+字符串关键字是str
+如果想要使用单引号在IDLE中换行那么就用\+ENTER
+>>> 'hellow\
+world'
+'hellowworld'
+>>> 
+
+3-8转义字符
+特殊的字符:无法"看见"的字符,与语言本身语法有冲突的字符
+转义字符
+\n  换行
+\'  单引号
+\t  横向制表符
+
+3-9原始字符串
+>>> print('hellow  \n world')
+hellow  
+ worl
+ >>> print(r'hellow  \n world')
+hellow  \n world
+当一个字符串在前面加入了一个r,那么就是一个原始字符串
+
+3-10字符串运算一
+3-11字符串运算二
+3-12字符串运算三
+和Java不同的是负数代表的是从后面开始取值
+>>> "hello world"[6]
+'w'
+>>> "hello world"[-5]
+'w'
+下面这个其实就是一个取步长的一个概念，截取某段到某段的字符
+>>> "hello world"[0:-5]
+'hello '
+>>> "hello world"[0:5]
+'hello'
+例如下面这个需要截取world，我们可以正向也可以反向,可以看到当我们取到-1或者0都是不对的，所以我们干脆就不写了
+>>> "hello world"[6:-1]
+'worl'
+>>> "hello world"[6:15]
+'world'
+>>> "hello world"[6:]
+'world'
+>>> "hello world"[-5:]
+'world'
+
+4-1列表的定义
