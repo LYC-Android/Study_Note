@@ -1,0 +1,66 @@
+Event:事件
+Subscriber:事件订阅者
+Publisher:时间发布者
+
+四个线程模型
+Posting: 那个线程发布就在那个
+MAIN:主线程
+BACKGROUND：主线程就在子线程，子线程就还是在子线程
+ASYNC：新的线程
+
+2.EventBus基本用法
+EventBus使用起来很简单，分为五个步骤：
+
+1.自定义一个事件类
+
+public class MessageEvent {
+    ...
+}
+2.在需要订阅事件的地方注册事件
+
+EventBus.getDefault().register(this);
+3.发送事件
+
+EventBus.getDefault().post(messageEvent);
+4.处理事件
+
+@Subscribe(threadMode = ThreadMode.MAIN)
+public void XXX(MessageEvent messageEvent) {
+    ...
+}
+前面我们说过，消息处理的方法可以随便取名，但是需要添加一个注解@Subscribe，并且要指定线程模型（默认为POSTING）。
+
+5.取消事件订阅
+
+EventBus.getDefault().unregister(this);
+
+
+EventBus(EventBusBuilder builder) {
+    subscriptionsByEventType = new HashMap<>();
+    typesBySubscriber = new HashMap<>();
+    stickyEvents = new ConcurrentHashMap<>();
+    mainThreadPoster = new HandlerPoster(this, Looper.getMainLooper(), 10);
+    backgroundPoster = new BackgroundPoster(this);
+    asyncPoster = new AsyncPoster(this);
+    indexCount = builder.subscriberInfoIndexes != null ? builder.subscriberInfoIndexes.size() : 0;
+    subscriberMethodFinder = new SubscriberMethodFinder(builder.subscriberInfoIndexes,
+            builder.strictMethodVerification, builder.ignoreGeneratedIndex);
+    logSubscriberExceptions = builder.logSubscriberExceptions;
+    logNoSubscriberMessages = builder.logNoSubscriberMessages;
+    sendSubscriberExceptionEvent = builder.sendSubscriberExceptionEvent;
+    sendNoSubscriberEvent = builder.sendNoSubscriberEvent;
+    throwSubscriberException = builder.throwSubscriberException;
+    eventInheritance = builder.eventInheritance;
+    executorService = builder.executorService;
+}
+
+subscriptionByEventType: Map<Class,List<Subcription>>是以事件的类为key，订阅者的回调方法为value的映射关系表
+
+typesBySubscriber: Map<Class,List<Class>> 每个订阅者所监听的事件类型表
+
+SubscriptionMethod：回调方法封装成这个东西
+
+SubscriberMethodFinder:在regster时得到订阅者的所有回调方法，并封装返回给EventBus,从而生成SubscriptionMethod
+
+register
+简单来说就是：根据订阅者的类来找回调方法，把订阅者和回调方法封装成关系，并保存到相应的数据结构中，为随后的事件分发做好准备，最后处理黏性事件：
