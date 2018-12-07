@@ -83,3 +83,81 @@ IP地址-IPV6
 3.默认的:我的电脑是无法直接连接到你们的电脑的
 
 3-1UDP是什么
+是一种面向数据报的传输层协议(而TCP是一种面向连接的协议)，只需要客户端发送，服务器接受即可，不需要建立起连接
+
+为什么常常说UDP是不可靠的?
+1.它一旦把应用程序发给网络层的数据发送出去，就不保留数据备份，当然也不会有重发的说法了额
+2.UDP在IP数据报的头部仅仅加入了复用和数据校验(字段)
+3.发送端生产数据，接收端从网络中抓取数据
+4.结构简单、无校验、速度快、容易丢包、可广播
+
+UDP能做什么
+1.DNS、TFTP、SNMP
+2.视频、音频、普通数据(无关紧要)
+
+3-2UDP核心API讲解
+ DatagramSocket
+1.用于接收与发送UDP的类
+2.负责发送某一个UDP包，或者就收UDP包
+3.不同于TCP，UDL并没有合并到Socket API
+
+DataGramSocket构造函数
+DatagramSocket()创建简单实例，不指定端口与IP
+DatagramSocket(int port)创建监听固定端口的实例
+DatagramSocket(int port,InetAddress localAddr)创建固定端口指定IP的实例
+
+方法
+receive(DatagramSocket d):接收
+send(DatagramPacket d):发送
+setSoTimeout(int timeout):设置超时，毫秒
+
+DatagramPacket
+1.用于处理报文
+2.讲byte数组、目标地址、目标端口等数据包装成报文或者将报文拆卸成byte数组
+3.是UDP的发送实体，也是接收实体
+
+构造函数
+DatagramPacket(byte[] buf,int offset,int length,InetAddress address,int port)
+前面三个参数指定buf的使用区间
+后面2个参数指定目标机器地址与端口
+
+DatagramPacket(byte[] buf,int length,SocketAddress address)
+前三个参数指定buf的使用区间
+SocketAddress相当于InetAddress+Port
+
+setData(byte[] buf,int offset,int length)
+setData(byte[] but)
+setLength(int length)
+getData()、getOffset()、getLength()
+setAddress(InetAddress iaddr)、setPort(int iport)
+getAddress()、getPort()
+setSocketAddress(SocketAdderss address)
+getSocketAddress()
+
+3-3UDP单播、广播、多播(也可以理解成组播)-1
+广播地址运算
+看子网掩码，如果是0那就直接网络地址最后那个变成255就是广播地址了
+例如
+IP: 192.168.124.7
+子网掩码:255.255.255.0
+网络地址:192.168.124.0
+广播地址:192.168.124.255
+
+当子网掩码最后一位不是0的时候
+IP: 192.168.124.7
+子网掩码:255.255.255.192
+网络地址:192.168.124.0
+广播地址:192.168.124.63
+
+255.255.255.192-11000000
+可划分网段:2^2=4个
+即 0~63、64~127、128~191、192~255
+然后以为我的IP地址最后一位是7位于第一个网段，所以最后一位就是广播地址63
+所以可以推断出广播地址为192.168.124.63
+
+广播通信问题
+主机一:192.168.124.7 ,子网掩码:255.255.255.192
+主机二:192.168.124.100,子网掩码:255.255.255.192
+主机一广播地址为192.168.124.63
+主机二广播地址为192.168.124.127
+因为上述的广播地址不一样所以当发送广播的时候2个主机是不能收到广播的
