@@ -171,6 +171,8 @@ BaseDexClassLoader:PathClassLoader和DexClassLoader都是它的一个子类
 AndFix介绍
 为什么有些需要在根目录的build.gradle中的classPath也添加依赖呢，原因在于，像子目录中的android闭包是一个类，apply是一个方法。然后如果我想新加一个比如mobsdk，那么就相当于引用了额一个新的Gradle类，所以就需要新增东西在classPath里面。只能修复方法级别的bug，且立刻生效。因为他是一个替换类的实现
 
+
+6-2Tinker基本介绍
 Tinker
 Tiner是微信官方的Android热补丁解决方案，它支持动态下发代码、So库以及资源，让应用能够在不需要重新安装的情况下实现更新。当然，你也可以使用Tinker来更新你的插件。
 
@@ -182,6 +184,7 @@ Tinker核心原理
 
 Tinker是微信官方的Android热补丁解决方案,它支持动态下发代码、so库以及资源,让应用能够在不需要重新安装的情况下实现更新。当然，你也可以使用Tinker来更更新你的插件。
 
+6-3
 
 插件化
 出现背景
