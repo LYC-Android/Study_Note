@@ -161,3 +161,52 @@ IP: 192.168.124.7
 主机一广播地址为192.168.124.63
 主机二广播地址为192.168.124.127
 因为上述的广播地址不一样所以当发送广播的时候2个主机是不能收到广播的
+
+3-5案例操作
+单播
+ System.out.println("UDP Provider Started:");
+
+        //作为一个接受者指定一个端口用于数据接收
+        DatagramSocket socket = new DatagramSocket(20000);
+
+        //构建接受实体
+        byte[] bytes = new byte[512];
+        DatagramPacket receivePacket = new DatagramPacket(bytes, bytes.length);
+
+        //接收
+        socket.receive(receivePacket);
+
+        //打印发送者消息，发送者IP地址
+        String hostAddress = receivePacket.getAddress().getHostAddress();
+        int receivePacketPort = receivePacket.getPort();
+        int receivePacketLength = receivePacket.getLength();
+        String data = new String(receivePacket.getData(),0, receivePacketLength);
+
+        //构建一份回调信息
+        String responseData = "Receive data with len" + receivePacketLength;
+        byte[] responseDataByte = responseData.getBytes();
+
+        socket.send(new DatagramPacket(responseDataByte, responseDataByte.length, receivePacket.getAddress(), receivePacketPort));
+
+        //完成
+        System.out.println("UDP Provider Finish");
+        socket.close();
+
+4-1TCP是什么能够做什么 
+TCP是传输层协议；是一种面向连接的、可靠的、基于字节流的传输层协议
+与UDP一样完成第四层传输层所指定的功能与职责
+
+TCP能做什么
+聊天消息传输、推送
+单人语音、视频聊天等
+几乎UDP能做的都能做，但需要考虑复杂性、性能问题
+限制:无法进行广播、多播等操作
+
+4-3TCP连接可靠性-三次握手、四次挥手
+三次握手  SYN X     SYN ACK X+1 Y   ACK Y+1 X+1
+        你能听得到吗  我可以你能听的我我吗，   我也可以   就连接了
+
+四次挥手	
+
+FIN=1,seq=u                     ACK=1，seq=v，ack=u+1  FIN=1，ACK=1,SEQ=W,ACK=U+1   ACK=1，seq=u+1，ack=w+1        
+我想关闭连接了，关闭自己的输出流   我收到了你可以关闭了             我的输出流输出完了     我收到了，你也关闭吧
